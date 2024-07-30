@@ -1,13 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { UserService } from './user.service'
-import { CreateUserDto } from './dto/user.dto'
+import { ValidateIdNumberDto } from './dto'
 
 @Controller('user')
 export class UserController {
   constructor(private readonly service: UserService) {}
 
-  @Post('create-user')
-  createUser(@Body() dto: CreateUserDto) {
-    return this.service.createUser(dto)
+  @HttpCode(HttpStatus.OK)
+  @Post('validate/identity-number')
+  createUser(@Body() dto: ValidateIdNumberDto) {
+    return this.service.validationIdentityNumber(dto)
   }
 }

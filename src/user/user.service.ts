@@ -1,43 +1,28 @@
 import { Injectable } from '@nestjs/common'
+import { ValidateIdNumberDto } from './dto'
+import { hashCrypto, success, validIdNumber } from 'src/lib'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
-import { CreateUserDto } from './dto/user.dto'
-import { UserRole } from './enum/user-role.enum'
-import { AddressUser } from 'src/address-user'
 
 @Injectable()
 export class UserService {
-  constructor() // @InjectRepository(User)
-  // private userRepository: Repository<User>,
+  constructor(
+    @InjectRepository(User)
+    private userRepo: Repository<User>
+  ) {}
 
-  // @InjectRepository(AddressUser)
-  // private addressRepository: Repository<AddressUser>
-  {}
+  async validationIdentityNumber(dto: ValidateIdNumberDto) {
+    const isValid = validIdNumber(dto.identity_number)
 
-  async createUser(dto: CreateUserDto) {
-    // const userParams = {
-    //   first_name: dto.first_name,
-    //   last_name: dto.last_name,
-    //   email: dto.email,
-    //   password: dto.password,
-    //   role: UserRole.USER,
-    //   id_card: dto.id_card,
-    // }
+    const hashedIdCard = hashCrypto(dto.identity_number)
 
-    // const newUser = await this.userRepository.save(userParams)
+    const data = await this.userRepo.findOne({
+      where: { id_card: hashedIdCard },
+    })
 
-    // if (newUser.id) {
-    //   const addressUserParmas = {
-    //     address_card_id: dto.address_card_id,
-    //     province: dto.province,
-    //     district: dto.district,
-    //     sub_district: dto.sub_district,
-    //     user_id: newUser.id,
-    //   }
+    if (data) return success('id_card is already exits', { result: false })
 
-    //   await this.addressRepository.save(addressUserParmas)
-
-    return { success: true }
+    return success(null, { result: isValid })
   }
 }

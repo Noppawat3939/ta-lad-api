@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config'
 import { UserModule } from './user'
 import { AddressUserModule } from './address-user'
 import { AuthModule } from './auth'
+import { RedisModule } from './redis'
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth'
     UserModule,
     AddressUserModule,
     AuthModule,
+    RedisModule,
   ],
 })
 export class AppModule {}
