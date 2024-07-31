@@ -28,3 +28,9 @@ export const hashCrypto = (
     .update(s)
     .digest(encoding ?? 'hex')
 }
+
+export const randomCodeNumber = (digits = 6) => {
+  const randomNum = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
+
+  return randomNum.toString().padStart(digits, '0')
+}

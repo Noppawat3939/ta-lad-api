@@ -1,4 +1,4 @@
-import { User } from 'src/user'
+import { User } from 'src/core/user'
 import {
   Column,
   CreateDateColumn,
