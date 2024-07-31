@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule as NestConfigModule } from '@nestjs/config'
+import { MailerModule } from '@nestjs-modules/mailer'
 
 @Global()
 @Module({
@@ -22,7 +23,15 @@ import { ConfigModule as NestConfigModule } from '@nestjs/config'
       synchronize: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAILER_HOST,
+        port: +process.env.MAILER_PORT,
+        secure: process.env.MAILER_SECURE,
+        auth: { user: process.env.MAILER_USER, pass: process.env.MAILER_PASS },
+      },
+    }),
   ],
-  exports: [JwtModule, NestConfigModule, TypeOrmModule],
+  exports: [JwtModule, NestConfigModule, TypeOrmModule, MailerModule],
 })
 export class ConfigModule {}

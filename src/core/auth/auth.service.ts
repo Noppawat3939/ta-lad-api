@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config'
 import { randomCodeNumber } from 'src/lib'
 import dayjs from 'dayjs'
 import { JwtService } from '@nestjs/jwt'
+import { MailerService } from '@nestjs-modules/mailer'
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,8 @@ export class AuthService {
     @InjectRepository(User)
     private userRepo: Repository<User>,
     private config: ConfigService,
-    private jwt: JwtService
+    private jwt: JwtService,
+    private mailer: MailerService
   ) {}
 
   async createUser(dto: CreateUserDto) {
@@ -37,6 +39,12 @@ export class AuthService {
     }
 
     const jwt = this.jwt.sign(payload)
+
+    await this.mailer.sendMail({
+      to: 'noppawat3984@gmail.com',
+      from: 'admin@talad.co.com',
+      text: 'Hello world',
+    })
 
     return { msg: 'ok', jwt }
   }
