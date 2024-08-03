@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { UserService } from './user.service'
-import { ValidateIdNumberDto } from './dto'
+import { ValidateEmailDto, ValidateIdNumberDto } from './dto'
 
 @Controller('user')
 export class UserController {
@@ -8,7 +8,13 @@ export class UserController {
 
   @HttpCode(HttpStatus.OK)
   @Post('validate/identity-number')
-  createUser(@Body() dto: ValidateIdNumberDto) {
+  validationIdNumber(@Body() dto: ValidateIdNumberDto) {
     return this.service.validationIdentityNumber(dto)
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('validate/email')
+  validationEmail(@Body() dto: ValidateEmailDto) {
+    return this.service.validationEmail(dto)
   }
 }

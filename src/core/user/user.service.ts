@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { ValidateIdNumberDto } from './dto'
+import { ValidateEmailDto, ValidateIdNumberDto } from './dto'
 import { hashCrypto, success, validIdNumber } from 'src/lib'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './entities'
@@ -19,8 +19,16 @@ export class UserService {
 
     const data = await this.userRepo.findOne({ where: { id_card } })
 
-    if (data) return success('user is already exits', { result: false })
+    if (data) return success('user already exits', { result: false })
 
     return success(null, { result: isValid })
+  }
+
+  async validationEmail({ email }: ValidateEmailDto) {
+    const userEmail = await this.userRepo.findOne({ where: { email } })
+
+    if (userEmail) return success('email already exits', { result: false })
+
+    return success(null, { result: true })
   }
 }

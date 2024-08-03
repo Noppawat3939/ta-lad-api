@@ -1,1 +1,1 @@
-export * from './validate-idnumber.dto'
+export * from './validation.dto'
