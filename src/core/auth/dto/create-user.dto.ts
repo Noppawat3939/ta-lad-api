@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, Length } from 'class-validator'
-import { CreateAddressUserDto } from 'src/address-user'
+import { CreateAddressUserDto } from 'src/core/address-user'
 
 export class CreateUserDto extends CreateAddressUserDto {
   @IsNotEmpty()
@@ -18,4 +18,13 @@ export class CreateUserDto extends CreateAddressUserDto {
   @Length(13)
   @IsNotEmpty()
   id_card: string
+
+  @IsNotEmpty()
+  phone_number: string
+
+  @IsNotEmpty()
+  verify_token: string
+
+  @IsNotEmpty()
+  code: string
 }

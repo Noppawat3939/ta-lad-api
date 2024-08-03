@@ -6,13 +6,13 @@ import { CreateUserDto, VerifyEmailDto } from './dto'
 export class AuthController {
   constructor(private service: AuthService) {}
 
-  @Post('create-user')
-  createUser(@Body() dto: CreateUserDto) {
-    return this.service.createUser(dto)
-  }
-
   @Post('verify-email')
   verifyEmail(@Body() dto: VerifyEmailDto) {
     return this.service.verifyEmail(dto)
+  }
+
+  @Post('create-user')
+  createUser(@Body() dto: CreateUserDto) {
+    return this.service.createUser(dto)
   }
 }

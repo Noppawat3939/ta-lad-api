@@ -21,7 +21,7 @@ import { MailerModule } from '@nestjs-modules/mailer'
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       synchronize: true,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     }),
     MailerModule.forRoot({
       transport: {

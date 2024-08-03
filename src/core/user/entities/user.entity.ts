@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 import { UserRole } from '../enum/user-role.enum'
-import { AddressUser } from 'src/address-user'
+import { AddressUser } from 'src/core/address-user'
 
 @Entity()
 export class User {
@@ -34,6 +34,9 @@ export class User {
 
   @Column({ nullable: true })
   id_card: string
+
+  @Column()
+  phone_number: string
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date
