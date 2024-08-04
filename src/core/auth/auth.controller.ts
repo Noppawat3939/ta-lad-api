@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { CreateUserDto, VerifyEmailDto } from './dto'
 
@@ -6,6 +6,7 @@ import { CreateUserDto, VerifyEmailDto } from './dto'
 export class AuthController {
   constructor(private service: AuthService) {}
 
+  @HttpCode(HttpStatus.OK)
   @Post('verify-email')
   verifyEmail(@Body() dto: VerifyEmailDto) {
     return this.service.verifyEmail(dto)

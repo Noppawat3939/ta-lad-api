@@ -5,11 +5,18 @@ import { Repository } from 'typeorm'
 import * as bcrypt from 'bcryptjs'
 import { CreateUserDto, VerifyEmailDto } from './dto'
 import { ConfigService } from '@nestjs/config'
-import { error, hashCrypto, randomCodeNumber, success } from 'src/lib'
+import {
+  error,
+  getStaticTemplate,
+  hashCrypto,
+  randomCodeNumber,
+  success,
+} from 'src/lib'
 import { JwtService } from '@nestjs/jwt'
 import { MailerService } from '@nestjs-modules/mailer'
 import { AddressUser } from 'src/core/address-user'
 import { IJwtDecodedVerifyToken } from 'src/types'
+import { delay } from 'rxjs'
 
 @Injectable()
 export class AuthService {
@@ -76,17 +83,25 @@ export class AuthService {
 
     const payload = {
       code,
-      expired_in: new Date().setSeconds(30),
+      expired_in: new Date().setMinutes(10),
       email,
     }
 
     const verify_token = this.jwt.sign(payload)
 
-    // await this.mailer.sendMail({
-    //   to: 'noppawat3984@gmail.com',
-    //   from: 'admin@talad.co.com',
-    //   text: 'Hello world',
-    // })
+    const html = getStaticTemplate('verify-email').replace(/\[code\]/g, code)
+
+    if (html) {
+      delay(1000)
+
+      await this.mailer.sendMail({
+        to: email.toLowerCase(),
+        from: 'admin@talad.co.com',
+        subject: 'ยืนยันการสมัครสมาชิก',
+        sender: 'admin@talad.co.com',
+        html,
+      })
+    }
 
     return success(null, { verify_token })
   }

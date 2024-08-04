@@ -1,5 +1,7 @@
 import { createHash } from 'crypto'
 import { regex } from '.'
+import { join } from 'path'
+import { readFileSync } from 'fs'
 
 type Encoding = 'base64' | 'base64url' | 'hex' | 'binary'
 
@@ -29,8 +31,26 @@ export const hashCrypto = (
     .digest(encoding ?? 'hex')
 }
 
-export const randomCodeNumber = (digits = 6) => {
+export const randomCodeNumber = () => {
   const randomNum = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
 
-  return randomNum.toString().padStart(digits, '0')
+  return randomNum.toString().padStart(6, '0')
 }
+
+export const getStaticTemplate = (fileName: string) => {
+  const pathFile = join(
+    __dirname,
+    '..',
+    '..',
+    'src',
+    'template',
+    `${fileName}.html`
+  )
+
+  const template = readFileSync(pathFile, 'utf-8')
+
+  return template
+}
+
+export const delay = (ms = 300) =>
+  new Promise((resolve) => setTimeout(resolve, ms))
