@@ -12,7 +12,7 @@ export class ValidateIdNumberDto {
   @Length(13)
   @MaxLength(13)
   @Matches(regex.number, { message: 'Pattern must be 0-9 only' })
-  identity_number: string
+  id_card: string
 }
 
 export class ValidateEmailDto {
