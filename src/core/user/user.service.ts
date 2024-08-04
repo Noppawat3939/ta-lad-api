@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { ValidateEmailDto, ValidateIdNumberDto } from './dto'
-import { hashCrypto, success, validIdNumber } from 'src/lib'
+import {
+  ValidateEmailDto,
+  ValidateIdNumberDto,
+  ValidatePhoneNumberDto,
+} from './dto'
+import { error, hashCrypto, success, validIdNumber } from 'src/lib'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './entities'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, Repository } from 'typeorm'
 
 @Injectable()
 export class UserService {
@@ -12,23 +16,43 @@ export class UserService {
     private userRepo: Repository<User>
   ) {}
 
-  async validationIdentityNumber(dto: ValidateIdNumberDto) {
-    const isValid = validIdNumber(dto.identity_number)
+  async validationField(
+    dto: ValidatePhoneNumberDto & ValidateEmailDto & ValidateIdNumberDto
+  ) {
+    let message: string | null
+    let filter: FindOptionsWhere<User>
+    let response = { available: false }
 
-    const id_card = hashCrypto(dto.identity_number)
+    if (Object.values(dto).length > 1) return error.badrequest('body invalid')
 
-    const data = await this.userRepo.findOne({ where: { id_card } })
+    const { phone_number, email, identity_number } = dto
 
-    if (data) return success('user already exits', { result: false })
+    if (phone_number) {
+      filter = { phone_number }
+    }
+    if (email) {
+      filter = { email }
+    }
+    if (identity_number) {
+      const isValidIdNumber = validIdNumber(identity_number)
+      const hashedIdNumber = hashCrypto(identity_number)
 
-    return success(null, { result: isValid })
-  }
+      if (!isValidIdNumber)
+        return success('id_card invalid', { available: false })
 
-  async validationEmail({ email }: ValidateEmailDto) {
-    const userEmail = await this.userRepo.findOne({ where: { email } })
+      filter = { id_card: hashedIdNumber }
+    }
 
-    if (userEmail) return success('email already exits', { result: false })
+    const user = await this.userRepo.findOne({ where: filter })
 
-    return success(null, { result: true })
+    if (user) {
+      message = `${Object.keys(filter).at(0)} already exits`
+      response.available = false
+    } else {
+      message = null
+      response.available = true
+    }
+
+    return success(message, response)
   }
 }

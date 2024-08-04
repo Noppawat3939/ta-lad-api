@@ -1,4 +1,8 @@
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import type { Nullable } from 'src/types'
 
 export const success = <TMessage extends Nullable<string>, TData>(
@@ -14,5 +18,8 @@ export const error = {
   },
   forbidden: (message = 'Error Forbidden') => {
     throw new ForbiddenException({ message, success: false })
+  },
+  badrequest: (message = 'Error Bad request') => {
+    throw new BadRequestException({ message, success: false })
   },
 }

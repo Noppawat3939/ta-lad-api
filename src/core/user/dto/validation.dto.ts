@@ -20,3 +20,8 @@ export class ValidateEmailDto {
   @IsEmail()
   email: string
 }
+
+export class ValidatePhoneNumberDto {
+  @IsNotEmpty()
+  phone_number: string
+}
