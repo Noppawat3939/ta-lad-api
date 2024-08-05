@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
 import type { Nullable } from 'src/types'
@@ -22,6 +23,13 @@ export const error = {
   },
   forbidden: (message = 'Error Forbidden', data?: object) => {
     throw new ForbiddenException({ message, success: false, ...(data && data) })
+  },
+  notfound: (message = 'Error NotFound', data?: object) => {
+    throw new NotFoundException({
+      message,
+      success: false,
+      ...(data && data),
+    })
   },
   badrequest: (message = 'Error Bad request', data?: object) => {
     throw new BadRequestException({

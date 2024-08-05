@@ -37,6 +37,17 @@ export const randomCodeNumber = () => {
   return randomNum.toString().padStart(6, '0')
 }
 
+export const randomString = (len = 50) => {
+  let text = ''
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+  for (let i = 0; i < len; i++) {
+    text += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+
+  return text
+}
+
 export const getStaticTemplate = (fileName: string) => {
   const pathFile = join(
     __dirname,

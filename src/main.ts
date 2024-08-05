@@ -10,6 +10,7 @@ async function bootstrap() {
     methods: ['GET', 'POST'],
     allowedHeaders: 'Content-Type,Authorization,Locale,Api-Key',
   })
+
   app.useGlobalPipes(new ValidationPipe())
 
   await app.listen(process.env.PORT, () => console.log('🌐 Server started'))

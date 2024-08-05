@@ -3,13 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { User, UserRole } from 'src/core/user'
 import { Repository } from 'typeorm'
 import * as bcrypt from 'bcryptjs'
-import { CreateUserDto, VerifyEmailDto } from './dto'
+import { CreateUserDto, LoginUserDto, VerifyEmailDto } from './dto'
 import { ConfigService } from '@nestjs/config'
 import {
   error,
   getStaticTemplate,
   hashCrypto,
   randomCodeNumber,
+  randomString,
   success,
 } from 'src/lib'
 import { JwtService } from '@nestjs/jwt'
@@ -17,6 +18,7 @@ import { MailerService } from '@nestjs-modules/mailer'
 import { AddressUser } from 'src/core/address-user'
 import { IJwtDecodedVerifyToken } from 'src/types'
 import { delay } from 'rxjs'
+import crypto from 'crypto'
 
 @Injectable()
 export class AuthService {
@@ -107,5 +109,38 @@ export class AuthService {
     }
 
     return success(null, { verify_token })
+  }
+
+  async loginUser(dto: LoginUserDto) {
+    const user = await this.userRepo.findOne({
+      where: { email: dto.email },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+      },
+    })
+
+    if (!user)
+      return error.notfound('user not found', {
+        error_message: 'ไม่พบผู้ใช้งาน',
+      })
+
+    const matched = await bcrypt.compare(dto.password, user.password)
+
+    if (matched) {
+      delete user.password
+
+      const session = this.jwt.sign({ ...user, session_key: randomString() })
+
+      return success('login success', {
+        data: session,
+        timestamps: Date.now(),
+      })
+    }
+
+    return error.badrequest('email or password invalid', {
+      error_message: 'อีเมลล์ หรือ รหัสผ่านไม่ถูกต้อง',
+    })
   }
 }
