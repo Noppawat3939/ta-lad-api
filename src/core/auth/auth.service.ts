@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { User } from 'src/core/user'
+import { User, UserRole } from 'src/core/user'
 import { Repository } from 'typeorm'
 import * as bcrypt from 'bcryptjs'
 import { CreateUserDto, VerifyEmailDto } from './dto'
@@ -40,7 +40,9 @@ export class AuthService {
     )
 
     if (decode.code !== dto.code || Date.now() < decode.expired_in) {
-      return error.forbidden('verify_token or code invalid')
+      return error.forbidden('verify_token or code invalid', {
+        error_message: 'รหัสยืนยันไม่ถูกต้อง',
+      })
     }
 
     const hashedPassword = bcrypt.hashSync(
@@ -57,6 +59,7 @@ export class AuthService {
       id_card: hashedIdCard,
       phone_number: dto.phone_number,
       active: true,
+      role: UserRole.USER,
     })
 
     const addressParams = this.adddressUserRepo.create({

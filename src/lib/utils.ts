@@ -51,6 +51,3 @@ export const getStaticTemplate = (fileName: string) => {
 
   return template
 }
-
-export const delay = (ms = 300) =>
-  new Promise((resolve) => setTimeout(resolve, ms))

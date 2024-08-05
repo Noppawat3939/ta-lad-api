@@ -13,13 +13,21 @@ export const success = <TMessage extends Nullable<string>, TData>(
 }
 
 export const error = {
-  unathorized: (message = 'Error Unauthorized') => {
-    throw new UnauthorizedException({ message, success: false })
+  unathorized: (message = 'Error Unauthorized', data?: object) => {
+    throw new UnauthorizedException({
+      message,
+      success: false,
+      ...(data && data),
+    })
   },
-  forbidden: (message = 'Error Forbidden') => {
-    throw new ForbiddenException({ message, success: false })
+  forbidden: (message = 'Error Forbidden', data?: object) => {
+    throw new ForbiddenException({ message, success: false, ...(data && data) })
   },
-  badrequest: (message = 'Error Bad request') => {
-    throw new BadRequestException({ message, success: false })
+  badrequest: (message = 'Error Bad request', data?: object) => {
+    throw new BadRequestException({
+      message,
+      success: false,
+      ...(data && data),
+    })
   },
 }
