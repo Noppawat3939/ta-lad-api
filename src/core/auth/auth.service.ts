@@ -18,7 +18,6 @@ import { MailerService } from '@nestjs-modules/mailer'
 import { AddressUser } from 'src/core/address-user'
 import { IJwtDecodedVerifyToken } from 'src/types'
 import { delay } from 'rxjs'
-import crypto from 'crypto'
 
 @Injectable()
 export class AuthService {
@@ -99,13 +98,13 @@ export class AuthService {
     if (html) {
       delay(1000)
 
-      // await this.mailer.sendMail({
-      //   to: email.toLowerCase(),
-      //   from: 'admin@talad.co.com',
-      //   subject: 'ยืนยันการสมัครสมาชิก',
-      //   sender: 'admin@talad.co.com',
-      //   html,
-      // })
+      await this.mailer.sendMail({
+        to: email.toLowerCase(),
+        from: 'admin@talad.co.com',
+        subject: 'ยืนยันการสมัครสมาชิก',
+        sender: 'admin@talad.co.com',
+        html,
+      })
     }
 
     return success(null, { verify_token })

@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { CreateUserDto, LoginUserDto, VerifyEmailDto } from './dto'
-import { SkipThrottle, Throttle } from '@nestjs/throttler'
+import { SkipThrottle } from '@nestjs/throttler'
 
 @Controller('auth')
 export class AuthController {
