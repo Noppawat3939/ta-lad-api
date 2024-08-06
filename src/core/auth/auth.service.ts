@@ -99,13 +99,13 @@ export class AuthService {
     if (html) {
       delay(1000)
 
-      await this.mailer.sendMail({
-        to: email.toLowerCase(),
-        from: 'admin@talad.co.com',
-        subject: 'ยืนยันการสมัครสมาชิก',
-        sender: 'admin@talad.co.com',
-        html,
-      })
+      // await this.mailer.sendMail({
+      //   to: email.toLowerCase(),
+      //   from: 'admin@talad.co.com',
+      //   subject: 'ยืนยันการสมัครสมาชิก',
+      //   sender: 'admin@talad.co.com',
+      //   html,
+      // })
     }
 
     return success(null, { verify_token })

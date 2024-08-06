@@ -3,6 +3,8 @@ import { JwtModule } from '@nestjs/jwt'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule as NestConfigModule } from '@nestjs/config'
 import { MailerModule } from '@nestjs-modules/mailer'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { APP_GUARD } from '@nestjs/core'
 
 @Global()
 @Module({

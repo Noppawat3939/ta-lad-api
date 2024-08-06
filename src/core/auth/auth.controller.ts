@@ -1,6 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { CreateUserDto, LoginUserDto, VerifyEmailDto } from './dto'
+import { SkipThrottle, Throttle } from '@nestjs/throttler'
 
 @Controller('auth')
 export class AuthController {
@@ -12,6 +13,7 @@ export class AuthController {
     return this.service.verifyEmail(dto)
   }
 
+  @SkipThrottle()
   @Post('create-user')
   createUser(@Body() dto: CreateUserDto) {
     return this.service.createUser(dto)
