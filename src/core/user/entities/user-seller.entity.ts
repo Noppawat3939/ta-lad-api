@@ -2,7 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
@@ -10,37 +10,32 @@ import { UserRole } from '../enum/user-role.enum'
 import { AddressUser } from 'src/core/address-user'
 
 @Entity()
-export class User {
+export class UserSeller {
   @PrimaryGeneratedColumn()
   id: number
-
-  @Column()
-  first_name: string
-
-  @Column()
-  last_name: string
 
   @Column({ unique: true })
   email: string
 
   @Column()
-  password: string
+  store_name: string
 
-  @Column({ nullable: true, default: false })
-  active: boolean
-
-  @Column({
-    type: 'enum',
-    nullable: true,
-    enum: UserRole,
-  })
-  role: UserRole
+  @Column()
+  phone_number: string
 
   @Column({ nullable: true })
   id_card: string
 
   @Column()
-  phone_number: string
+  password: string
+
+  @Column({
+    type: 'enum',
+    nullable: true,
+    enum: UserRole,
+    default: UserRole.STORE,
+  })
+  role: UserRole
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date
@@ -48,6 +43,6 @@ export class User {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date
 
-  @OneToMany(() => AddressUser, (address) => address.id)
+  @OneToOne(() => AddressUser, (address) => address.id)
   addresses: AddressUser[]
 }

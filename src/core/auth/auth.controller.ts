@@ -1,6 +1,11 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { AuthService } from './auth.service'
-import { CreateUserDto, LoginUserDto, VerifyEmailDto } from './dto'
+import {
+  CreateUserDto,
+  CreateUserSellerDto,
+  LoginUserDto,
+  VerifyEmailDto,
+} from './dto'
 import { SkipThrottle } from '@nestjs/throttler'
 
 @Controller('auth')
@@ -19,9 +24,21 @@ export class AuthController {
     return this.service.createUser(dto)
   }
 
+  @SkipThrottle()
+  @Post('create-user-seller')
+  createUserSeller(@Body() dto: CreateUserSellerDto) {
+    return this.service.createUserSeller(dto)
+  }
+
   @HttpCode(HttpStatus.OK)
   @Post('login-user')
   loginUser(@Body() dto: LoginUserDto) {
     return this.service.loginUser(dto)
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('login-seller')
+  loginSeller(@Body() dto: LoginUserDto) {
+    return this.service.loginUserSeller(dto)
   }
 }

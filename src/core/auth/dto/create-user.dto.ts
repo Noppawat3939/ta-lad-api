@@ -28,3 +28,28 @@ export class CreateUserDto extends CreateAddressUserDto {
   @IsNotEmpty()
   code: string
 }
+
+export class CreateUserSellerDto extends CreateAddressUserDto {
+  @IsNotEmpty()
+  store_name: string
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string
+
+  @IsNotEmpty()
+  password: string
+
+  @Length(13)
+  @IsNotEmpty()
+  id_card: string
+
+  @IsNotEmpty()
+  phone_number: string
+
+  @IsNotEmpty()
+  verify_token: string
+
+  @IsNotEmpty()
+  code: string
+}
