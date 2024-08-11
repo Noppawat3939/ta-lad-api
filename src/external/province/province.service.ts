@@ -8,7 +8,7 @@ export class ProvinceService {
   constructor() {}
 
   async getProvinceData(dto?: {
-    search?: 'district' | 'sub_district' | 'province'
+    search?: 'district' | 'sub_district'
     province_id?: number
     district_id?: number
   }) {
@@ -31,7 +31,7 @@ export class ProvinceService {
 
     const res = await promise
 
-    if (['sub_district', 'district'].includes(dto.search)) {
+    if (dto.search) {
       const v: (District & SubDistrict)[] = res
 
       const searchKey = dto.search === 'district' ? 'province_id' : 'amphure_id'

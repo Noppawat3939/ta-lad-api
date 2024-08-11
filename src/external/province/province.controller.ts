@@ -15,7 +15,7 @@ export class ProvinceController {
   getProvince(
     @Body()
     dto: {
-      search?: 'district' | 'sub_district' | 'province'
+      search?: 'district' | 'sub_district'
       province_id?: number
       district_id?: number
     }
