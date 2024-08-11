@@ -25,3 +25,8 @@ export class ValidatePhoneNumberDto {
   @IsNotEmpty()
   phone_number: string
 }
+
+export class ValidateStoreNameDto {
+  @IsNotEmpty()
+  store_name: string
+}
