@@ -4,6 +4,7 @@ import {
   ValidateEmailDto,
   ValidateIdNumberDto,
   ValidatePhoneNumberDto,
+  ValidateStoreNameDto,
 } from './dto'
 
 @Controller('user')
@@ -13,7 +14,11 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @Post('validate')
   validation(
-    @Body() dto: ValidatePhoneNumberDto & ValidateEmailDto & ValidateIdNumberDto
+    @Body()
+    dto: ValidatePhoneNumberDto &
+      ValidateEmailDto &
+      ValidateIdNumberDto &
+      ValidateStoreNameDto
   ) {
     return this.service.validationField(dto)
   }
