@@ -24,7 +24,8 @@ export class UserService {
     dto: ValidatePhoneNumberDto &
       ValidateEmailDto &
       ValidateIdNumberDto &
-      ValidateStoreNameDto
+      ValidateStoreNameDto,
+    checkStore = false
   ) {
     let message: string | null
     let filter: FindOptionsWhere<User | UserSeller>
@@ -35,6 +36,8 @@ export class UserService {
 
     const { phone_number, email, id_card, store_name } = dto
 
+    let repository: typeof this.userSellerRepo | typeof this.userRepo
+
     if (phone_number) {
       filter = { phone_number }
     }
@@ -43,6 +46,13 @@ export class UserService {
     }
     if (store_name) {
       filter = { store_name }
+    }
+
+    if (checkStore) {
+      repository = this.userSellerRepo
+    }
+    if (!checkStore) {
+      repository = this.userRepo
     }
 
     if (id_card) {
@@ -70,8 +80,8 @@ export class UserService {
         response.field = field
         response.error_message = `${store} already exits`
       }
-    } else if (email) {
-      const user = await this.userRepo.findOne({
+    } else if (email || phone_number) {
+      const user = await repository.findOne({
         where: filter,
         select: { id: true },
       })

@@ -133,10 +133,10 @@ export class AuthService {
     if (newSeller) {
       await this.adddressUserRepo.save({
         ...addressParams,
-        user_id: newSeller.id,
+        user_seller_id: newSeller.id,
       })
 
-      return success('created user')
+      return success('created seller')
     }
   }
 
