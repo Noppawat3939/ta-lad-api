@@ -6,6 +6,7 @@ import { AddressUser } from 'src/core/address-user'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
+import { MailModule } from '../mail'
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { APP_GUARD } from '@nestjs/core'
         blockDuration: 10000,
       },
     ]),
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

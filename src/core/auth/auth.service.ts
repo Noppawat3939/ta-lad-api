@@ -19,10 +19,9 @@ import {
   success,
 } from 'src/lib'
 import { JwtService } from '@nestjs/jwt'
-import { MailerService } from '@nestjs-modules/mailer'
 import { AddressUser } from 'src/core/address-user'
 import { IJwtDecodedVerifyToken } from 'src/types'
-import { delay } from 'rxjs'
+import { MailService } from '../mail'
 
 @Injectable()
 export class AuthService {
@@ -36,7 +35,7 @@ export class AuthService {
 
     private config: ConfigService,
     private jwt: JwtService,
-    private mailer: MailerService
+    private mail: MailService
   ) {}
 
   async createUser(dto: CreateUserDto) {
@@ -164,14 +163,9 @@ export class AuthService {
     const html = getStaticTemplate('verify-email').replace(/\[code\]/g, code)
 
     if (html) {
-      delay(1000)
-
-      await this.mailer.sendMail({
-        to: email.toLowerCase(),
-        from: 'admin@talad.co.com',
-        subject: 'ยืนยันการสมัครสมาชิก',
-        sender: 'admin@talad.co.com',
-        html,
+      await this.mail.confirmationRegister({
+        email: email.toLocaleLowerCase(),
+        code,
       })
     }
 
