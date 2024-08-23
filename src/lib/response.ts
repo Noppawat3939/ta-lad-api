@@ -14,24 +14,24 @@ export const success = <TMessage extends Nullable<string>, TData>(
 }
 
 export const error = {
-  unathorized: (message = 'Error Unauthorized', data?: object) => {
+  unathorized: (message = 'unauthorized', data?: object) => {
     throw new UnauthorizedException({
       message,
       success: false,
       ...(data && data),
     })
   },
-  forbidden: (message = 'Error Forbidden', data?: object) => {
+  forbidden: (message = 'forbidden', data?: object) => {
     throw new ForbiddenException({ message, success: false, ...(data && data) })
   },
-  notfound: (message = 'Error NotFound', data?: object) => {
+  notfound: (message = 'notFound', data?: object) => {
     throw new NotFoundException({
       message,
       success: false,
       ...(data && data),
     })
   },
-  badrequest: (message = 'Error Bad request', data?: object) => {
+  badrequest: (message = 'bad request', data?: object) => {
     throw new BadRequestException({
       message,
       success: false,

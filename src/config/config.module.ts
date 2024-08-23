@@ -3,13 +3,14 @@ import { JwtModule } from '@nestjs/jwt'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule as NestConfigModule } from '@nestjs/config'
 import { MailerModule } from '@nestjs-modules/mailer'
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
-import { APP_GUARD } from '@nestjs/core'
+import { PassportModule } from '@nestjs/passport'
+import { JwtStrategy } from 'src/lib'
 
 @Global()
 @Module({
   imports: [
     NestConfigModule.forRoot({ isGlobal: true }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
@@ -34,6 +35,7 @@ import { APP_GUARD } from '@nestjs/core'
       },
     }),
   ],
-  exports: [JwtModule, NestConfigModule, TypeOrmModule, MailerModule],
+  providers: [JwtStrategy],
+  exports: [NestConfigModule, JwtModule, TypeOrmModule, MailerModule],
 })
 export class ConfigModule {}

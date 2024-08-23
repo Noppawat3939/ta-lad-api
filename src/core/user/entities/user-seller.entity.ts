@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 import { UserRole } from '../enum/user-role.enum'
 import { AddressUser } from 'src/core/address-user'
+import { SellerProduct } from 'src/core/products/seller-product'
 
 @Entity()
 export class UserSeller {
@@ -45,4 +47,10 @@ export class UserSeller {
 
   @OneToOne(() => AddressUser, (address) => address.id)
   addresses: AddressUser[]
+
+  @OneToMany(
+    () => SellerProduct,
+    (seller_propduct) => seller_propduct.seller_id
+  )
+  seller_propduct: SellerProduct
 }
