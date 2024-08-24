@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
-import { User, UserSeller } from 'src/core/user'
+import { User, UserRepositories, UserSeller } from 'src/core/user'
 import { AddressUser } from 'src/core/address-user'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
@@ -21,6 +21,10 @@ import { MailModule } from '../mail'
     MailModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [
+    AuthService,
+    UserRepositories,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
 })
 export class AuthModule {}

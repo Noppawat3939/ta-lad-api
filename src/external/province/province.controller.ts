@@ -2,9 +2,9 @@ import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { ProvinceService } from './province.service'
 import { SkipThrottle } from '@nestjs/throttler'
 import { HttpStatusCode } from 'axios'
-import { ExternalGuard } from 'src/guards'
+import { PrivateKeyGuard } from 'src/guards'
 
-@UseGuards(ExternalGuard)
+@UseGuards(PrivateKeyGuard)
 @Controller('province')
 export class ProvinceController {
   constructor(private readonly service: ProvinceService) {}

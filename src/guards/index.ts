@@ -1,3 +1,2 @@
-export * from './external.guard'
-export * from './jwt.guard'
-export * from './user-role.guard'
+export * from './private-key.guard'
+export * from './auth.guard'

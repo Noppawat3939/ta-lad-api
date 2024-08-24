@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule as NestConfigModule } from '@nestjs/config'
 import { MailerModule } from '@nestjs-modules/mailer'
 import { PassportModule } from '@nestjs/passport'
-import { JwtStrategy } from 'src/lib'
 
 @Global()
 @Module({
@@ -12,6 +11,7 @@ import { JwtStrategy } from 'src/lib'
     NestConfigModule.forRoot({ isGlobal: true }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
+      global: true,
       secret: process.env.JWT_SECRET,
       signOptions: {
         expiresIn: process.env.JWT_EXPIRED ?? '1d',
@@ -35,7 +35,6 @@ import { JwtStrategy } from 'src/lib'
       },
     }),
   ],
-  providers: [JwtStrategy],
   exports: [NestConfigModule, JwtModule, TypeOrmModule, MailerModule],
 })
 export class ConfigModule {}
