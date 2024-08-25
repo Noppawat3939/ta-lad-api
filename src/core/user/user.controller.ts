@@ -18,8 +18,11 @@ export class UserController {
     dto: ValidatePhoneNumberDto &
       ValidateEmailDto &
       ValidateIdNumberDto &
-      ValidateStoreNameDto
+      ValidateStoreNameDto & { role?: string }
   ) {
-    return this.service.validationField(dto)
+    const checkStore = dto.role === 'store'
+    const { role, ...restDto } = dto
+
+    return this.service.validationField(restDto, checkStore)
   }
 }

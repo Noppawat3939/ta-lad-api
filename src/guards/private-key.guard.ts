@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { error } from 'src/lib'
 
 @Injectable()
-export class ExternalGuard implements CanActivate {
+export class PrivateKeyGuard implements CanActivate {
   constructor(private config: ConfigService) {}
 
   canActivate(ctx: ExecutionContext) {
@@ -12,6 +12,6 @@ export class ExternalGuard implements CanActivate {
 
     const isValid = apiKey === this.config.getOrThrow('PRIVATE_KEY')
 
-    return isValid || error.forbidden('not allowed')
+    return isValid || error.forbidden('not allow')
   }
 }

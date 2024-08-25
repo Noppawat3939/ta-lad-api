@@ -6,34 +6,32 @@ import {
   ValidateStoreNameDto,
 } from './dto'
 import { error, hashCrypto, success, validIdNumber } from 'src/lib'
-import { InjectRepository } from '@nestjs/typeorm'
-import { User, UserSeller } from './entities'
-import { FindOptionsWhere, Repository } from 'typeorm'
+import { UserEntity, UserSellerEntity } from './entities'
+import { FindOptionsWhere } from 'typeorm'
+import { UserRepository, UserSellerRepository } from './repository'
+
+type ValidationFieldsDto = ValidatePhoneNumberDto &
+  ValidateEmailDto &
+  ValidateIdNumberDto &
+  ValidateStoreNameDto
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private userRepo: Repository<User>,
-
-    @InjectRepository(UserSeller)
-    private userSellerRepo: Repository<UserSeller>
+    private userRepo: UserRepository,
+    private userSellerRepo: UserSellerRepository
   ) {}
 
-  async validationField(
-    dto: ValidatePhoneNumberDto &
-      ValidateEmailDto &
-      ValidateIdNumberDto &
-      ValidateStoreNameDto
-  ) {
+  async validationField(dto: ValidationFieldsDto, checkStore = false) {
     let message: string | null
-    let filter: FindOptionsWhere<User | UserSeller>
+    let filter: FindOptionsWhere<UserEntity | UserSellerEntity>
     let response = { available: false, field: '', error_message: '' }
 
-    if (Object.values(dto).length > 1 || Object.values(dto).length === 0)
-      return error.badrequest('body invalid')
+    if (Object.values(dto).length !== 1) return error.badrequest('body invalid')
 
     const { phone_number, email, id_card, store_name } = dto
+
+    let repository: typeof this.userSellerRepo | typeof this.userRepo
 
     if (phone_number) {
       filter = { phone_number }
@@ -43,6 +41,12 @@ export class UserService {
     }
     if (store_name) {
       filter = { store_name }
+    }
+    if (checkStore) {
+      repository = this.userSellerRepo
+    }
+    if (!checkStore) {
+      repository = this.userRepo
     }
 
     if (id_card) {
@@ -58,27 +62,28 @@ export class UserService {
 
       filter = { id_card: hashedIdNumber }
     } else if (store_name) {
-      const store = await this.userSellerRepo.findOne({
-        where: { store_name },
-        select: { store_name: true },
-      })
+      const store = await this.userSellerRepo.findOne(
+        {
+          store_name,
+        },
+        ['store_name']
+      )
 
       if (store) {
         const [field] = Object.keys(filter)
-        message = `${Object.keys(filter).at(0)} already exits`
+
+        message = `${field} already exits`
         response.available = false
         response.field = field
         response.error_message = `${store} already exits`
       }
-    } else if (email) {
-      const user = await this.userRepo.findOne({
-        where: filter,
-        select: { id: true },
-      })
+    } else if (email || phone_number) {
+      const user = await repository.findOne(filter, ['id'])
 
       if (user) {
         const [field] = Object.keys(filter)
-        message = `${Object.keys(filter).at(0)} already exits`
+
+        message = `${field} already exits`
         response.available = false
         response.field = field
         response.error_message =

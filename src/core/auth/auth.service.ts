@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { User, UserRole, UserSeller } from 'src/core/user'
+import { UserRepository, UserRole, UserSellerEntity } from 'src/core/user'
 import { Repository } from 'typeorm'
 import * as bcrypt from 'bcryptjs'
 import {
@@ -19,28 +19,26 @@ import {
   success,
 } from 'src/lib'
 import { JwtService } from '@nestjs/jwt'
-import { MailerService } from '@nestjs-modules/mailer'
-import { AddressUser } from 'src/core/address-user'
+import { AddressUserEntity } from 'src/core/address-user'
 import { IJwtDecodedVerifyToken } from 'src/types'
-import { delay } from 'rxjs'
+import { MailService } from '../mail'
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private userRepo: Repository<User>,
-    @InjectRepository(AddressUser)
-    private adddressUserRepo: Repository<AddressUser>,
-    @InjectRepository(UserSeller)
-    private userSellerRepo: Repository<UserSeller>,
+    @InjectRepository(AddressUserEntity)
+    private adddressUserRepo: Repository<AddressUserEntity>,
+    @InjectRepository(UserSellerEntity)
+    private userSellerRepo: Repository<UserSellerEntity>,
+    private userRepository: UserRepository,
 
     private config: ConfigService,
     private jwt: JwtService,
-    private mailer: MailerService
+    private mail: MailService
   ) {}
 
   async createUser(dto: CreateUserDto) {
-    const user = await this.userRepo.findOne({ where: { email: dto.email } })
+    const user = await this.userRepository.findOne({ email: dto.email })
 
     if (user) return error.unathorized('user exits')
 
@@ -60,7 +58,14 @@ export class AuthService {
     )
     const hashedIdCard = hashCrypto(dto.id_card)
 
-    const createUserParams = this.userRepo.create({
+    const addressParams = this.adddressUserRepo.create({
+      address_card_id: dto.address_card_id,
+      province: dto.province,
+      district: dto.district,
+      sub_district: dto.sub_district,
+    })
+
+    const newUser = await this.userRepository.create({
       first_name: dto.first_name,
       last_name: dto.last_name,
       email: dto.email,
@@ -70,15 +75,6 @@ export class AuthService {
       active: true,
       role: UserRole.USER,
     })
-
-    const addressParams = this.adddressUserRepo.create({
-      address_card_id: dto.address_card_id,
-      province: dto.province,
-      district: dto.district,
-      sub_district: dto.sub_district,
-    })
-
-    const newUser = await this.userRepo.save(createUserParams)
 
     if (newUser.id) {
       await this.adddressUserRepo.save({
@@ -133,16 +129,16 @@ export class AuthService {
     if (newSeller) {
       await this.adddressUserRepo.save({
         ...addressParams,
-        user_id: newSeller.id,
+        user_seller_id: newSeller.id,
       })
 
-      return success('created user')
+      return success('created seller')
     }
   }
 
   async verifyEmail({ email }: VerifyEmailDto) {
     const [user, seller] = await Promise.all([
-      this.userRepo.findOne({ where: { email }, select: { email: true } }),
+      this.userRepository.findOne({ email }, ['email']),
       this.userSellerRepo.findOne({
         where: { email },
         select: { email: true },
@@ -162,31 +158,22 @@ export class AuthService {
     const verify_token = this.jwt.sign(payload)
 
     const html = getStaticTemplate('verify-email').replace(/\[code\]/g, code)
+    const emailReceiver = email.toLowerCase()
 
     if (html) {
-      delay(1000)
-
-      await this.mailer.sendMail({
-        to: email.toLowerCase(),
-        from: 'admin@talad.co.com',
-        subject: 'ยืนยันการสมัครสมาชิก',
-        sender: 'admin@talad.co.com',
-        html,
-      })
+      await this.mail.confirmationRegister({ email: emailReceiver, code })
     }
 
     return success(null, { verify_token })
   }
 
   async loginUser(dto: LoginUserDto) {
-    const user = await this.userRepo.findOne({
-      where: { email: dto.email },
-      select: {
-        id: true,
-        email: true,
-        password: true,
-      },
-    })
+    const user = await this.userRepository.findOne({ email: dto.email }, [
+      'id',
+      'password',
+      'email',
+      'role',
+    ])
 
     if (!user)
       return error.notfound('user not found', {
@@ -219,6 +206,7 @@ export class AuthService {
         email: true,
         password: true,
         store_name: true,
+        role: true,
       },
     })
 
