@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { UserSellerEntity } from '../entities'
+import { UserSellerEntity as Entity } from '../entities'
 import { FindOneOptions, Repository } from 'typeorm'
 
 @Injectable()
 export class UserSellerRepository {
   constructor(
-    @InjectRepository(UserSellerEntity)
-    private repo: Repository<UserSellerEntity>
+    @InjectRepository(Entity)
+    private repo: Repository<Entity>
   ) {}
 
   async findOne(
-    filter: FindOneOptions<UserSellerEntity>['where'],
-    selected?: (keyof UserSellerEntity)[]
+    filter: FindOneOptions<Entity>['where'],
+    selected?: (keyof Entity)[]
   ) {
     let select = {}
 

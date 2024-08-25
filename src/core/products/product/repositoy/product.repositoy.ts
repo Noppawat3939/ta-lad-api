@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { ProductEntity } from '../entities'
+import { ProductEntity as Entity } from '../entities'
 import { DeepPartial, FindOneOptions, Repository } from 'typeorm'
 
 @Injectable()
 export class ProductRepository {
   constructor(
-    @InjectRepository(ProductEntity)
-    private readonly repo: Repository<ProductEntity>
+    @InjectRepository(Entity)
+    private readonly repo: Repository<Entity>
   ) {}
 
-  async createProduct(entity: DeepPartial<ProductEntity>[]) {
+  async createProduct(entity: DeepPartial<Entity>[]) {
     const response = await this.repo.save(entity)
     return response
   }
 
   async all(
-    selected?: (keyof ProductEntity)[],
-    order?: FindOneOptions<ProductEntity>['order']
+    selected?: (keyof Entity)[],
+    order?: FindOneOptions<Entity>['order']
   ) {
     let select = {}
     const hasSelected = selected.length > 0
@@ -34,7 +34,7 @@ export class ProductRepository {
   }
 
   async updateProduct(
-    entity: DeepPartial<Omit<ProductEntity, 'updated_at' | 'created_at'>>
+    entity: DeepPartial<Omit<Entity, 'updated_at' | 'created_at'>>
   ) {
     const { id, ...rest } = entity
 

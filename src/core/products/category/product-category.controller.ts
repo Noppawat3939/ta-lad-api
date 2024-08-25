@@ -15,6 +15,6 @@ export class ProductCategoryController {
   @Post('insert')
   @UsePipes(ValidationPipe)
   insert(@Body() dto: InsertProductCategoryDto) {
-    return this.service.insertCategory(dto)
+    return this.service.insertCategory(dto['data'])
   }
 }

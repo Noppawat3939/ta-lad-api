@@ -1,36 +1,20 @@
 import { Injectable } from '@nestjs/common'
-import { InsertProductCategoryDto } from './dto'
-import { InjectRepository } from '@nestjs/typeorm'
-import { ProductCategory } from './entities'
-import { Repository } from 'typeorm'
+import { InsertProductCategoryDto as InsertDto } from './dto'
 import { success } from 'src/lib'
+import { ProductCategoryRepository } from './repository'
 
 @Injectable()
 export class ProductCategoryService {
-  constructor(
-    @InjectRepository(ProductCategory)
-    private pdCategory: Repository<ProductCategory>
-  ) {}
+  constructor(private pdCategoryRepo: ProductCategoryRepository) {}
 
-  async insertCategory({ data }: InsertProductCategoryDto) {
-    let createParamList = []
+  async insertCategory(dto: InsertDto['data']) {
+    await this.pdCategoryRepo.create(dto)
 
-    for (let i = 0; i < data.length; i++) {
-      const rowData = data[i]
-
-      const createParams = this.pdCategory.create(rowData)
-      createParamList.push(createParams)
-    }
-
-    await this.pdCategory.save(createParamList)
-
-    return success(`inserted category ${createParamList.length} orders`)
+    return success('inserted category')
   }
 
   async getList() {
-    const [data, total] = await this.pdCategory.findAndCount({
-      order: { id: 'DESC' },
-    })
+    const [data, total] = await this.pdCategoryRepo.allAndCount()
 
     return success(null, { data, total })
   }

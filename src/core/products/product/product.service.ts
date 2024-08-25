@@ -10,11 +10,11 @@ export class ProductService {
     @Inject(forwardRef(() => SellerProductService))
     private readonly sellerProductService: SellerProductService,
 
-    private repo: ProductRepository
+    private pdRepo: ProductRepository
   ) {}
 
   async insertProduct(seller_id: number, dto: InsertProdutDto['data']) {
-    const newProducts = await this.repo.createProduct(dto)
+    const newProducts = await this.pdRepo.createProduct(dto)
 
     for (let index = 0; index < newProducts.length; index++) {
       const product = newProducts[index]
@@ -27,6 +27,6 @@ export class ProductService {
       }
     }
 
-    return success('created product')
+    return success('inserted product')
   }
 }
