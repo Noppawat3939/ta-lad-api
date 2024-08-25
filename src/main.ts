@@ -15,6 +15,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe())
   app.useGlobalFilters(new ValidateBadReqExceptionFilter())
 
-  await app.listen(process.env.PORT, () => console.log('🌐 Server started'))
+  await app.listen(process.env.PORT, () =>
+    console.log(`🌐 Server started in ${process.env.PORT}`)
+  )
 }
 bootstrap()

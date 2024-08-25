@@ -12,6 +12,7 @@ export class ValidateBadReqExceptionFilter implements ExceptionFilter {
     const context = host.switchToHttp()
     const res = context.getResponse()
     const status = exception.getStatus()
+
     const exceptionRes = exception.getResponse() as {
       message?: Nullable<string[] | string>
       error?: object
