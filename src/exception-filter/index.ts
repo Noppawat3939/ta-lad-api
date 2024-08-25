@@ -1,1 +1,1 @@
-export * from './validate'
+export * from './badrequest-validator'
