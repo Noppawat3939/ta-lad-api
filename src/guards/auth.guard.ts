@@ -3,10 +3,9 @@ import { ConfigService } from '@nestjs/config'
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
-import { UserRole } from 'src/core/user'
 import { ROLES_KEY } from 'src/decorator'
 import { error } from 'src/lib'
-import { type IJwtAccessToken } from 'src/types'
+import { Role, type IJwtAccessToken } from 'src/types'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,7 +17,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest()
-    const requiredRoles = this.reflector.get<UserRole[]>(
+    const requiredRoles = this.reflector.get<Role[]>(
       ROLES_KEY,
       context.getHandler()
     )
@@ -35,16 +34,9 @@ export class AuthGuard implements CanActivate {
       secret: this.config.get('JWT_SECRET'),
     })
 
-    const userSeller = requiredRoles.find((role) => role === UserRole.STORE)
+    const isAllowed = this.allowRole(requiredRoles, payload.role)
 
-    const isNotAllowed = [
-      userSeller && !payload.store_name,
-      !userSeller && payload.store_name,
-    ].some(Boolean)
-
-    if (isNotAllowed) {
-      return error.forbidden('not allow')
-    }
+    if (!isAllowed) return error.forbidden('not allow')
 
     req['user'] = payload
 
@@ -54,5 +46,9 @@ export class AuthGuard implements CanActivate {
   private extractTokenFromHeader(req: Request) {
     const [type, token] = req.headers.authorization?.split(' ') ?? []
     return type === 'Bearer' ? token : undefined
+  }
+
+  private allowRole<T extends Role>(requirerdRoles: T[], userRole: T) {
+    return requirerdRoles.some((role) => role === userRole)
   }
 }

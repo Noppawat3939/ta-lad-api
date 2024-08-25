@@ -1,3 +1,5 @@
+import { Role } from './user.type'
+
 export interface IJwtDecodedVerifyToken {
   code: string
   expired_in: number
@@ -13,4 +15,5 @@ export interface IJwtAccessToken {
   iat: number
   exp: number
   store_name?: string
+  role: Role
 }

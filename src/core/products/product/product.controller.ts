@@ -3,16 +3,15 @@ import { ProductController } from '../decorator'
 import { ProductService } from './product.service'
 import { AuthGuard } from 'src/guards'
 import { Roles } from 'src/decorator'
-import { UserRole } from 'src/core/user'
 
 @ProductController('item')
 export class ProductItemController {
   constructor(private readonly service: ProductService) {}
 
   @UseGuards(AuthGuard)
-  @Roles([UserRole.STORE])
+  @Roles(['store'])
   @Post('insert')
   insertProduct() {
-    return { msg: 'inserted' }
+    return this.service.insertProduct()
   }
 }

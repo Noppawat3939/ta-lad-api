@@ -213,6 +213,7 @@ export class AuthService {
         email: true,
         password: true,
         store_name: true,
+        role: true,
       },
     })
 
