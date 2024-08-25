@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
 import { ROLES_KEY } from 'src/decorator'
 import { error } from 'src/lib'
-import { Role, type IJwtAccessToken } from 'src/types'
+import { Role, type IJwtDecodeToken } from 'src/types'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate {
 
     if (!requiredRoles) return true
 
-    let payload: IJwtAccessToken
+    let payload: IJwtDecodeToken
 
     payload = this.jwt.verify(token, {
       secret: this.config.get('JWT_SECRET'),

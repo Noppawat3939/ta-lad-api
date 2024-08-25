@@ -1,12 +1,18 @@
-import { Module } from '@nestjs/common'
+import { Module, forwardRef } from '@nestjs/common'
 import { SellerProductController } from './seller-product.controller'
 import { SellerProductService } from './seller-product.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { SellerProduct } from './entities'
+import { SellerProductEntity } from './entities'
+import { ProductModule } from '../product'
+import { SellerProductRepository } from './repository'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SellerProduct])],
+  imports: [
+    forwardRef(() => ProductModule),
+    TypeOrmModule.forFeature([SellerProductEntity]),
+  ],
   controllers: [SellerProductController],
-  providers: [SellerProductService],
+  providers: [SellerProductService, SellerProductRepository],
+  exports: [SellerProductService],
 })
 export class SellerProducModule {}

@@ -1,4 +1,4 @@
-import { User, UserSeller } from 'src/core/user'
+import { UserEntity, UserSellerEntity } from 'src/core/user'
 import {
   Column,
   CreateDateColumn,
@@ -9,8 +9,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-@Entity()
-export class AddressUser {
+@Entity('addess_user')
+export class AddressUserEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -32,11 +32,11 @@ export class AddressUser {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => UserEntity, (user) => user.id)
   @JoinColumn({ name: 'user_id' })
   user_id: number
 
-  @ManyToOne(() => UserSeller, (user) => user.id)
+  @ManyToOne(() => UserSellerEntity, (user) => user.id)
   @JoinColumn({ name: 'user_seller_id' })
   user_seller_id: number
 }

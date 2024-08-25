@@ -8,7 +8,7 @@ export interface IJwtDecodedVerifyToken {
   exp: number
 }
 
-export interface IJwtAccessToken {
+export interface IJwtDecodeToken {
   id: number
   email: string
   session_key: string

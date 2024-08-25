@@ -1,12 +1,6 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import {
-  UserModule,
-  UserRepositories,
-  UserRole,
-  UserSeller,
-  UserService,
-} from 'src/core/user'
+import { UserRepository, UserRole, UserSellerEntity } from 'src/core/user'
 import { Repository } from 'typeorm'
 import * as bcrypt from 'bcryptjs'
 import {
@@ -25,23 +19,22 @@ import {
   success,
 } from 'src/lib'
 import { JwtService } from '@nestjs/jwt'
-import { AddressUser } from 'src/core/address-user'
+import { AddressUserEntity } from 'src/core/address-user'
 import { IJwtDecodedVerifyToken } from 'src/types'
 import { MailService } from '../mail'
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(AddressUser)
-    private adddressUserRepo: Repository<AddressUser>,
-    @InjectRepository(UserSeller)
-    private userSellerRepo: Repository<UserSeller>,
+    @InjectRepository(AddressUserEntity)
+    private adddressUserRepo: Repository<AddressUserEntity>,
+    @InjectRepository(UserSellerEntity)
+    private userSellerRepo: Repository<UserSellerEntity>,
+    private userRepository: UserRepository,
 
     private config: ConfigService,
     private jwt: JwtService,
-    private mail: MailService,
-
-    private userRepository: UserRepositories
+    private mail: MailService
   ) {}
 
   async createUser(dto: CreateUserDto) {

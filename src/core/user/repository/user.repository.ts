@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { User } from '../entities'
+import { UserEntity } from '../entities'
 import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm'
 
 @Injectable()
-export class UserRepositories {
+export class UserRepository {
   constructor(
-    @InjectRepository(User)
-    private userRepo: Repository<User>
+    @InjectRepository(UserEntity)
+    private repo: Repository<UserEntity>
   ) {}
 
-  async findOne(filter: FindOptionsWhere<User>, selected?: (keyof User)[]) {
+  async findOne(
+    filter: FindOptionsWhere<UserEntity>,
+    selected?: (keyof UserEntity)[]
+  ) {
     let select = {}
     const hasSelected = selected.length > 0
 
@@ -18,7 +21,7 @@ export class UserRepositories {
       selected.forEach((field) => (select[field] = true))
     }
 
-    const response = await this.userRepo.findOne({
+    const response = await this.repo.findOne({
       where: filter,
       ...(hasSelected && { select }),
     })
@@ -26,10 +29,9 @@ export class UserRepositories {
     return response
   }
 
-  async create(entity: DeepPartial<User>) {
-    const user = this.userRepo.create(entity)
-
-    const response = await this.userRepo.save(user)
+  async create(entity: DeepPartial<UserEntity>) {
+    const user = this.repo.create(entity)
+    const response = await this.repo.save(user)
 
     return response
   }

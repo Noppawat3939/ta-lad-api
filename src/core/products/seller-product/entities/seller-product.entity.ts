@@ -1,17 +1,33 @@
-import { UserSeller } from 'src/core/user'
-import { Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { Product } from '../../product'
+import { UserSellerEntity } from 'src/core/user'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
+import { ProductEntity } from '../../product'
 
-@Entity()
-export class SellerProduct {
+@Entity('seller_product')
+export class SellerProductEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @OneToMany(() => UserSeller, (user) => user.id)
-  @JoinColumn({ name: 'seller_id' })
+  @Column()
   seller_id: number
 
-  @OneToMany(() => Product, (product) => product.id)
-  @JoinColumn({ name: 'product_id' })
+  @Column()
   product_id: number
+
+  @ManyToOne(() => ProductEntity, (product) => product.id, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'product_id' })
+  product: ProductEntity
+
+  @ManyToOne(() => UserSellerEntity, (userSeller) => userSeller.id, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'seller_id' })
+  userSeller: UserSellerEntity
 }

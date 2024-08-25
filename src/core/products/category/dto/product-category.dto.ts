@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer'
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator'
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+} from 'class-validator'
 
 class ProductCategoryParams {
   @IsNotEmpty()
@@ -12,6 +18,7 @@ class ProductCategoryParams {
 
 export class InsertProductCategoryDto {
   @IsArray()
+  @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => ProductCategoryParams)
   data: ProductCategoryParams[]

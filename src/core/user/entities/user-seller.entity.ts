@@ -8,11 +8,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 import { UserRole } from '../enum/user-role.enum'
-import { AddressUser } from 'src/core/address-user'
-import { SellerProduct } from 'src/core/products/seller-product'
+import { AddressUserEntity } from 'src/core/address-user'
+import { SellerProductEntity } from 'src/core/products/seller-product'
 
-@Entity()
-export class UserSeller {
+@Entity('user_seller')
+export class UserSellerEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -45,12 +45,12 @@ export class UserSeller {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date
 
-  @OneToOne(() => AddressUser, (address) => address.id)
-  addresses: AddressUser[]
+  @OneToOne(() => AddressUserEntity, (address) => address.id)
+  addresses: AddressUserEntity[]
 
   @OneToMany(
-    () => SellerProduct,
+    () => SellerProductEntity,
     (seller_propduct) => seller_propduct.seller_id
   )
-  seller_propduct: SellerProduct
+  seller_propduct: SellerProductEntity
 }

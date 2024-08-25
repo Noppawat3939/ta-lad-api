@@ -6,8 +6,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-@Entity()
-export class Product {
+@Entity('product')
+export class ProductEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -23,11 +23,11 @@ export class Product {
   @Column()
   price: number
 
-  @Column()
+  @Column({ default: 0 })
   stock_amount: number
 
-  @Column()
-  sold_amount: number
+  @Column({ default: 0 })
+  sold_amount?: number
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date
