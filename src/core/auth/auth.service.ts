@@ -65,7 +65,14 @@ export class AuthService {
     )
     const hashedIdCard = hashCrypto(dto.id_card)
 
-    const createUserParams = this.userRepository.create({
+    const addressParams = this.adddressUserRepo.create({
+      address_card_id: dto.address_card_id,
+      province: dto.province,
+      district: dto.district,
+      sub_district: dto.sub_district,
+    })
+
+    const newUser = await this.userRepository.create({
       first_name: dto.first_name,
       last_name: dto.last_name,
       email: dto.email,
@@ -75,15 +82,6 @@ export class AuthService {
       active: true,
       role: UserRole.USER,
     })
-
-    const addressParams = this.adddressUserRepo.create({
-      address_card_id: dto.address_card_id,
-      province: dto.province,
-      district: dto.district,
-      sub_district: dto.sub_district,
-    })
-
-    const newUser = await this.userRepository.saveCreate(createUserParams)
 
     if (newUser.id) {
       await this.adddressUserRepo.save({
@@ -167,12 +165,10 @@ export class AuthService {
     const verify_token = this.jwt.sign(payload)
 
     const html = getStaticTemplate('verify-email').replace(/\[code\]/g, code)
+    const emailReceiver = email.toLowerCase()
 
     if (html) {
-      await this.mail.confirmationRegister({
-        email: email.toLocaleLowerCase(),
-        code,
-      })
+      await this.mail.confirmationRegister({ email: emailReceiver, code })
     }
 
     return success(null, { verify_token })

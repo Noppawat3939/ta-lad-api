@@ -26,14 +26,10 @@ export class UserRepositories {
     return response
   }
 
-  create(params: DeepPartial<User>) {
-    const response = this.userRepo.create(params)
+  async create(entity: DeepPartial<User>) {
+    const user = this.userRepo.create(entity)
 
-    return response
-  }
-
-  async saveCreate(params: User) {
-    const response = await this.userRepo.save(params)
+    const response = await this.userRepo.save(user)
 
     return response
   }
