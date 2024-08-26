@@ -8,12 +8,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api')
   app.enableCors({
     origin: [process.env.LOCAL_ORIGIN],
-    methods: ['GET', 'POST', 'DELETE'],
+    methods: ['GET', 'POST'],
     allowedHeaders: 'Content-Type,Authorization,Locale,Api-Key',
   })
-
-  app.useGlobalPipes(new ValidationPipe())
   app.useGlobalFilters(new ValidateBadReqExceptionFilter())
+  app.useGlobalPipes(new ValidationPipe())
 
   await app.listen(process.env.PORT, () =>
     console.log(`🌐 Server started in ${process.env.PORT}`)
