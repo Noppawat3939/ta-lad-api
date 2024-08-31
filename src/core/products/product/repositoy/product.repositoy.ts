@@ -15,7 +15,7 @@ export class ProductRepository {
     return response
   }
 
-  async all(
+  async findAll(
     selected?: (keyof Entity)[],
     order?: FindOneOptions<Entity>['order']
   ) {

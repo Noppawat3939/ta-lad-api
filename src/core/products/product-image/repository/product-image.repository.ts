@@ -9,7 +9,7 @@ export class ProductImageRepository {
     @InjectRepository(Entity) private readonly repo: Repository<Entity>
   ) {}
 
-  async create(entity: DeepPartial<Entity>) {
+  async create(entity: DeepPartial<Entity>[]) {
     const response = await this.repo.save(entity)
     return response
   }

@@ -26,6 +26,9 @@ class ProductParams {
   @MinLength(1)
   brand: string
 
+  @IsOptional()
+  product_image?: string[]
+
   @IsNotEmpty({ message: 'price is required' })
   @IsNumber()
   @Min(0)

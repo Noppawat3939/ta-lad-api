@@ -27,8 +27,7 @@ export class UserRepository {
   }
 
   async create(entity: DeepPartial<Entity>) {
-    const user = this.repo.create(entity)
-    const response = await this.repo.save(user)
+    const response = await this.repo.save(entity)
 
     return response
   }

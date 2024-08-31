@@ -16,7 +16,10 @@ export class CloudinaryService {
         const destination = cloudinary.uploader.upload_stream(
           { folder: 'talad_products' },
           (err, result) => {
-            if (err) reject(err)
+            if (err) {
+              console.log('upload image', err)
+              reject(err)
+            }
 
             resolve(result)
           }

@@ -15,7 +15,7 @@ export class ProductCategoryRepository {
     return response
   }
 
-  async allAndCount(order?: FindOneOptions<Entity>['order']) {
+  async findAllAndCount(order?: FindOneOptions<Entity>['order']) {
     const response = await this.repo.findAndCount({
       order: order || { id: 'desc' },
     })
