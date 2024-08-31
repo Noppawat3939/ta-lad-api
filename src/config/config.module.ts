@@ -14,7 +14,7 @@ import { PassportModule } from '@nestjs/passport'
       global: true,
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: process.env.JWT_EXPIRED ?? '1d',
+        expiresIn: process.env.JWT_EXPIRED ?? '3d',
       },
     }),
     TypeOrmModule.forRoot({

@@ -14,6 +14,9 @@ export class ProductEntity {
   @Column()
   product_name: string
 
+  @Column({ default: null })
+  description?: string | null
+
   @Column()
   category_name: string
 
@@ -28,6 +31,18 @@ export class ProductEntity {
 
   @Column({ default: 0 })
   sold_amount?: number
+
+  @Column({ default: 0 })
+  discount_percent?: number
+
+  @Column({ default: 0 })
+  discount_price?: number
+
+  @Column({ default: null })
+  discount_start_date?: string | null
+
+  @Column({ default: null })
+  discount_end_date?: string | null
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date
