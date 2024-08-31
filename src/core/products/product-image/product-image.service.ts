@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { ProductImageRepository } from './repository'
 import { ProductImageEntity } from './entities'
+import { DeepPartial } from 'typeorm'
 
 @Injectable()
 export class ProductImageService {
   constructor(private pdImageRepo: ProductImageRepository) {}
 
-  async insertImage(dto: Omit<ProductImageEntity, 'id'>) {
+  async insertImage(dto: DeepPartial<Omit<ProductImageEntity, 'id'>>[]) {
     if (Object.values(dto).length === 0) return
 
     const data = await this.pdImageRepo.create(dto)

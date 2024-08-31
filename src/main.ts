@@ -9,7 +9,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [process.env.LOCAL_ORIGIN],
     methods: ['GET', 'POST'],
-    allowedHeaders: 'Content-Type,Authorization,Locale,Api-Key',
+    allowedHeaders: 'Content-Type,Authorization,Locale,Api-Key,Session-Key',
   })
   app.useGlobalFilters(new ValidateBadReqExceptionFilter())
   app.useGlobalPipes(new ValidationPipe())

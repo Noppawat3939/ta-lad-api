@@ -14,7 +14,7 @@ export class ProductCategoryService {
   }
 
   async getList() {
-    const [data, total] = await this.pdCategoryRepo.allAndCount()
+    const [data, total] = await this.pdCategoryRepo.findAllAndCount()
 
     return success(null, { data, total })
   }

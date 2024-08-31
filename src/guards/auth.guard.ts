@@ -1,21 +1,29 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
+import { UserEntity, UserSellerEntity } from 'src/core/user'
 import { ROLES_KEY } from 'src/decorator'
 import { error } from 'src/lib'
 import { Role, type IJwtDecodeToken } from 'src/types'
+import { DataSource } from 'typeorm'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
+    @Inject(DataSource) private readonly dataSource: DataSource,
     private readonly reflector: Reflector,
     private readonly jwt: JwtService,
     private readonly config: ConfigService
   ) {}
 
-  canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest()
     const requiredRoles = this.reflector.get<Role[]>(
       ROLES_KEY,
@@ -29,16 +37,35 @@ export class AuthGuard implements CanActivate {
     if (!requiredRoles) return true
 
     let payload: IJwtDecodeToken
+    let entity: typeof UserSellerEntity | typeof UserEntity
+    let filter = {}
 
-    payload = this.jwt.verify(token, {
+    payload = await this.jwt.verifyAsync(token, {
       secret: this.config.get('JWT_SECRET'),
     })
 
-    const isAllowed = this.allowRole(requiredRoles, payload.role)
+    if (payload.store_name) {
+      entity = UserSellerEntity
+    } else {
+      entity = UserEntity
+    }
+
+    const data = await this.dataSource.getRepository(entity).findOne({
+      where: filter,
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        ...(payload.store_name && { store_name: true }),
+      },
+    })
+
+    const isAllowed = this.allowRole(requiredRoles, data.role as Role)
 
     if (!isAllowed) return error.forbidden('not allow')
+    filter = { email: payload.email }
 
-    req['user'] = payload
+    req['user'] = data
 
     return true
   }

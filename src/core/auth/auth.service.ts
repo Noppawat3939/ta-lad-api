@@ -172,7 +172,6 @@ export class AuthService {
       'id',
       'password',
       'email',
-      'role',
     ])
 
     if (!user)
@@ -206,7 +205,6 @@ export class AuthService {
         email: true,
         password: true,
         store_name: true,
-        role: true,
       },
     })
 

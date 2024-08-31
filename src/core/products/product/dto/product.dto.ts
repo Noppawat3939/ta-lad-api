@@ -5,6 +5,8 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
+  MaxLength,
   Min,
   MinLength,
   ValidateNested,
@@ -24,14 +26,37 @@ class ProductParams {
   @MinLength(1)
   brand: string
 
+  @IsOptional()
+  product_image?: string[]
+
   @IsNotEmpty({ message: 'price is required' })
   @IsNumber()
   @Min(0)
   price: number
 
   @IsOptional()
+  @MaxLength(200)
+  description?: string
+
+  @IsOptional()
   @IsNumber()
   stock_amount?: number
+
+  @IsOptional()
+  @IsNumber()
+  discount_percent?: number
+
+  @IsOptional()
+  @IsNumber()
+  discount_price?: number
+
+  @IsOptional()
+  @IsString()
+  discount_start_date?: string
+
+  @IsOptional()
+  @IsString()
+  discount_end_date?: string
 }
 
 export class InsertProdutDto {
