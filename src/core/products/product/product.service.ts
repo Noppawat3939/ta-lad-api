@@ -63,4 +63,28 @@ export class ProductService {
 
     return success('inserted product')
   }
+
+  async getSellerProductList(seller_id: number) {
+    const [data, total] =
+      await this.sellerProductService.findProductBySellerId(seller_id)
+
+    let response = []
+
+    for (let productItem of data) {
+      response.push(productItem.product)
+    }
+
+    return success(null, { data: response, total })
+  }
+
+  async getSellerProductById<T extends number>(seller_id: T, id: T) {
+    const data = await this.sellerProductService.fineOneProductById({
+      seller_id,
+      product_id: id,
+    })
+
+    if (!data?.id) return success('product not found', { data: null })
+
+    return success(null, { data })
+  }
 }

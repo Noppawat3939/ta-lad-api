@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ProductEntity as Entity } from '../entities'
-import { DeepPartial, FindOneOptions, Repository } from 'typeorm'
+import {
+  DeepPartial,
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm'
 
 @Injectable()
 export class ProductRepository {
@@ -30,6 +35,11 @@ export class ProductRepository {
       ...(hasSelected && { select }),
       order: order || { created_at: 'desc' },
     })
+    return response
+  }
+
+  async findOne(filter: FindOptionsWhere<Entity>) {
+    const response = await this.repo.findOne({ where: filter })
     return response
   }
 

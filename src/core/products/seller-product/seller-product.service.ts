@@ -11,4 +11,23 @@ export class SellerProductService {
     const response = await this.repo.create(params)
     return response
   }
+
+  async findProductBySellerId(seller_id: number) {
+    const response = await this.repo.findAllAndCount(seller_id)
+    return response
+  }
+
+  async fineOneProductById<T extends number>({
+    seller_id,
+    product_id,
+  }: {
+    seller_id: T
+    product_id: T
+  }) {
+    const response = await this.repo.findOne({
+      product_id,
+      seller_id,
+    })
+    return response?.product
+  }
 }
