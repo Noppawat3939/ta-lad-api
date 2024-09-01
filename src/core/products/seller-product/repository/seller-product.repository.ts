@@ -20,6 +20,7 @@ export class SellerProductRepository {
     const response = await this.repo.findAndCount({
       where: { seller_id },
       relations: ['product'],
+      order: { product: { created_at: 'desc' } },
     })
 
     return response

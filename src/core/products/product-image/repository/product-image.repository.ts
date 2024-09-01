@@ -15,7 +15,10 @@ export class ProductImageRepository {
   }
 
   async findByProductId(product_id: number) {
-    const response = await this.repo.findBy({ product_id })
+    const response = await this.repo.find({
+      where: { product_id },
+      select: { image: true },
+    })
     return response
   }
 }

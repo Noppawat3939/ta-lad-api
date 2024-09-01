@@ -71,7 +71,13 @@ export class ProductService {
     let response = []
 
     for (let productItem of data) {
-      response.push(productItem.product)
+      const pdImage = await this.pdImgService.getImageByProductId(
+        productItem.product_id
+      )
+
+      const image = pdImage.length > 0 ? pdImage.map((item) => item.image) : []
+
+      response.push({ ...productItem['product'], image })
     }
 
     return success(null, { data: response, total })

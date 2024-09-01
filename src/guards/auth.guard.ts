@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config'
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
-import { UserEntity, UserSellerEntity } from 'src/core/user'
+import { UserEntity, UserRole, UserSellerEntity } from 'src/core/user'
 import { ROLES_KEY } from 'src/decorator'
 import { error } from 'src/lib'
 import { Role, type IJwtDecodeToken } from 'src/types'
@@ -49,8 +49,10 @@ export class AuthGuard implements CanActivate {
     if (!isValid) return error.forbidden('not allowed')
 
     if (payload.store_name) {
+      filter = { email: payload.email, role: UserRole.STORE }
       entity = UserSellerEntity
     } else {
+      filter = { email: payload.email, role: UserRole.USER }
       entity = UserEntity
     }
 
