@@ -44,6 +44,10 @@ export class AuthGuard implements CanActivate {
       secret: this.config.get('JWT_SECRET'),
     })
 
+    const isValid = this.validateSessionKey(req, payload.session_key)
+
+    if (!isValid) return error.forbidden('not allowed')
+
     if (payload.store_name) {
       entity = UserSellerEntity
     } else {
@@ -62,7 +66,7 @@ export class AuthGuard implements CanActivate {
 
     const isAllowed = this.allowRole(requiredRoles, data.role as Role)
 
-    if (!isAllowed) return error.forbidden('not allow')
+    if (!isAllowed) return error.forbidden('not allowed')
     filter = { email: payload.email }
 
     req['user'] = data
@@ -77,5 +81,13 @@ export class AuthGuard implements CanActivate {
 
   private allowRole<T extends Role>(requirerdRoles: T[], userRole: T) {
     return requirerdRoles.some((role) => role === userRole)
+  }
+
+  private validateSessionKey(req: Request, decodedSessionKey?: string) {
+    const sessionKeyHeaders = req.headers['session-key']
+    if (sessionKeyHeaders !== decodedSessionKey) {
+      console.log('🔑 session-key invalid')
+    }
+    return sessionKeyHeaders ? sessionKeyHeaders === decodedSessionKey : false
   }
 }

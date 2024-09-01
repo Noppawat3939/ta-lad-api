@@ -32,4 +32,13 @@ export class ProductItemController {
 
     return this.service.insertProduct(user.id, dto['data'])
   }
+
+  @SkipThrottle()
+  @UseGuards(AuthGuard)
+  @Roles(['store'])
+  @HttpCode(HttpStatusCode.Ok)
+  @Post('seller')
+  getSellerProduct() {
+    return 'ok'
+  }
 }
