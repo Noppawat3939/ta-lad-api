@@ -31,6 +31,9 @@ export class UserSellerEntity {
   @Column()
   password: string
 
+  @Column({ default: null })
+  profile_image?: string
+
   @Column({
     type: 'enum',
     nullable: true,

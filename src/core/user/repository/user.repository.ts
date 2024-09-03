@@ -12,7 +12,7 @@ export class UserRepository {
 
   async findOne(filter: FindOptionsWhere<Entity>, selected?: (keyof Entity)[]) {
     let select = {}
-    const hasSelected = selected.length > 0
+    const hasSelected = selected?.length > 0
 
     if (hasSelected) {
       selected.forEach((field) => (select[field] = true))
