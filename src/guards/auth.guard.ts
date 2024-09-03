@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config'
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
-import { UserEntity, UserSellerEntity } from 'src/core/user'
+import { UserEntity, UserRole, UserSellerEntity } from 'src/core/user'
 import { ROLES_KEY } from 'src/decorator'
 import { error } from 'src/lib'
 import { Role, type IJwtDecodeToken } from 'src/types'
@@ -42,9 +42,15 @@ export class AuthGuard implements CanActivate {
       secret: this.config.get('JWT_SECRET'),
     })
 
+    const isValid = this.validateSessionKey(req, payload.session_key)
+
+    if (!isValid) return error.forbidden('not allowed')
+
     if (payload.store_name) {
+      filter = { email: payload.email, role: UserRole.STORE }
       entity = UserSellerEntity
     } else {
+      filter = { email: payload.email, role: UserRole.USER }
       entity = UserEntity
     }
 
@@ -65,7 +71,7 @@ export class AuthGuard implements CanActivate {
 
     const isAllowed = this.allowRole(requiredRoles, data.role as Role)
 
-    if (!isAllowed) return error.forbidden('not allow')
+    if (!isAllowed) return error.forbidden('not allowed')
     filter = { email: payload.email }
 
     req['user'] = data
@@ -80,5 +86,13 @@ export class AuthGuard implements CanActivate {
 
   private allowRole<T extends Role>(requirerdRoles: T[], userRole: T) {
     return requirerdRoles.some((role) => role === userRole)
+  }
+
+  private validateSessionKey(req: Request, decodedSessionKey?: string) {
+    const sessionKeyHeaders = req.headers['session-key']
+    if (sessionKeyHeaders !== decodedSessionKey) {
+      console.log('🔑 session-key invalid')
+    }
+    return sessionKeyHeaders ? sessionKeyHeaders === decodedSessionKey : false
   }
 }
