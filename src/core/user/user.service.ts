@@ -9,6 +9,7 @@ import { error, hashCrypto, success, validIdNumber } from 'src/lib'
 import { UserEntity, UserSellerEntity } from './entities'
 import { FindOptionsWhere } from 'typeorm'
 import { UserRepository, UserSellerRepository } from './repository'
+import type { Role } from 'src/types'
 
 type ValidationFieldsDto = ValidatePhoneNumberDto &
   ValidateEmailDto &
@@ -100,5 +101,31 @@ export class UserService {
     }
 
     return success(message, response)
+  }
+
+  async getUserByRole({ email, role }: { email: string; role: Role }) {
+    let data: UserEntity | UserSellerEntity
+    if (role === 'user') {
+      data = await this.userRepo.findOne({ email }, [
+        'id',
+        'email',
+        'first_name',
+        'last_name',
+        'profile_image',
+        'created_at',
+        'updated_at',
+      ])
+    } else {
+      data = await this.userSellerRepo.findOne({ email }, [
+        'id',
+        'email',
+        'store_name',
+        'profile_image',
+        'created_at',
+        'updated_at',
+      ])
+    }
+
+    return success('getted user', { ...data })
   }
 }

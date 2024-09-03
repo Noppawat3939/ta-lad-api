@@ -26,6 +26,9 @@ export class UserEntity {
   @Column()
   password: string
 
+  @Column({ default: null })
+  profile_image?: string
+
   @Column({ nullable: true, default: false })
   active: boolean
 

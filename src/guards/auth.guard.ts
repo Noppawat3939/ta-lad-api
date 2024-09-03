@@ -34,8 +34,6 @@ export class AuthGuard implements CanActivate {
 
     if (!token) return error.unathorized()
 
-    if (!requiredRoles) return true
-
     let payload: IJwtDecodeToken
     let entity: typeof UserSellerEntity | typeof UserEntity
     let filter = {}
@@ -65,6 +63,11 @@ export class AuthGuard implements CanActivate {
         ...(payload.store_name && { store_name: true }),
       },
     })
+
+    if (!requiredRoles) {
+      req['user'] = data
+      return true
+    }
 
     const isAllowed = this.allowRole(requiredRoles, data.role as Role)
 
