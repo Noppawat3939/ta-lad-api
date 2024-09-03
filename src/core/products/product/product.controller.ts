@@ -1,6 +1,7 @@
 import {
   Body,
   HttpCode,
+  Param,
   Post,
   Req,
   UseFilters,
@@ -31,5 +32,27 @@ export class ProductItemController {
     const user: IJwtDecodeToken = req.user
 
     return this.service.insertProduct(user.id, dto['data'])
+  }
+
+  @SkipThrottle()
+  @UseGuards(AuthGuard)
+  @Roles(['store'])
+  @HttpCode(HttpStatusCode.Ok)
+  @Post('seller')
+  getSellerProduct(@Req() req: Request) {
+    const seller: IJwtDecodeToken = req.user
+
+    return this.service.getSellerProductList(seller.id)
+  }
+
+  @SkipThrottle()
+  @UseGuards(AuthGuard)
+  @Roles(['store'])
+  @HttpCode(HttpStatusCode.Ok)
+  @Post('seller/:id')
+  getSellerProductById(@Req() req: Request, @Param() { id }: { id: string }) {
+    const seller: IJwtDecodeToken = req.user
+
+    return this.service.getSellerProductById(seller.id, +id)
   }
 }
