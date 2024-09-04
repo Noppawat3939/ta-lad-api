@@ -114,6 +114,7 @@ export class UserService {
         'profile_image',
         'created_at',
         'updated_at',
+        'role',
       ])
     } else {
       data = await this.userSellerRepo.findOne({ email }, [
@@ -123,9 +124,10 @@ export class UserService {
         'profile_image',
         'created_at',
         'updated_at',
+        'role',
       ])
     }
 
-    return success('getted user', { ...data })
+    return success('getted user', { data })
   }
 }
