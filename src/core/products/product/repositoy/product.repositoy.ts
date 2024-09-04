@@ -25,7 +25,7 @@ export class ProductRepository {
     order?: FindOneOptions<Entity>['order']
   ) {
     let select = {}
-    const hasSelected = selected.length > 0
+    const hasSelected = selected?.length > 0
 
     if (hasSelected) {
       selected.forEach((field) => (select[field] = true))

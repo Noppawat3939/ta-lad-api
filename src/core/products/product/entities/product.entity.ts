@@ -44,6 +44,9 @@ export class ProductEntity {
   @Column({ default: null })
   discount_end_date?: string | null
 
+  @Column({ default: null })
+  sku?: string
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date
 

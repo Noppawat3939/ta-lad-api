@@ -93,4 +93,10 @@ export class ProductService {
 
     return success(null, { data })
   }
+
+  async getProductList() {
+    const data = await this.pdRepo.findAll()
+
+    return success('getted products', { data, total: data.length })
+  }
 }

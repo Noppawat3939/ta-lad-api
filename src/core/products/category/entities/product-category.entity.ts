@@ -10,4 +10,7 @@ export class ProductCategoryEntity {
 
   @Column()
   image: string
+
+  @Column({ default: null, unique: true })
+  code?: string
 }
