@@ -21,6 +21,7 @@ export class ProductRepository {
   }
 
   async findAll(
+    filter?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
     selected?: (keyof Entity)[],
     order?: FindOneOptions<Entity>['order']
   ) {
@@ -32,6 +33,7 @@ export class ProductRepository {
     }
 
     const response = await this.repo.find({
+      where: filter,
       ...(hasSelected && { select }),
       order: order || { created_at: 'desc' },
     })

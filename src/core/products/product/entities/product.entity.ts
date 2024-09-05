@@ -47,7 +47,9 @@ export class ProductEntity {
   @Column({ default: null })
   sku?: string
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({
+    type: 'timestamp',
+  })
   created_at: Date
 
   @UpdateDateColumn({ type: 'timestamp' })

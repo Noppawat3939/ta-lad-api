@@ -62,4 +62,15 @@ export class ProductItemController {
   getProductList() {
     return this.service.getProductList()
   }
+
+  @SkipThrottle()
+  @UseGuards(AuthGuard)
+  @Roles(['store'])
+  @HttpCode(HttpStatusCode.Ok)
+  @Post('sku/update')
+  updateSku(@Req() req: Request) {
+    const seller: IJwtDecodeToken = req.user
+
+    return this.service.updateSkuProduct(seller.id)
+  }
 }

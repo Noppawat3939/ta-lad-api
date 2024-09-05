@@ -2,7 +2,6 @@ import { createHash } from 'crypto'
 import { regex } from '.'
 import { join } from 'path'
 import { readFileSync } from 'fs'
-import dayjs from 'dayjs'
 
 type Encoding = 'base64' | 'base64url' | 'hex' | 'binary'
 
@@ -75,7 +74,7 @@ export const createSkuProduct = ({
   seller_id: number
   created_at: string
 }) => {
-  const concatSKU = `${product_category_code}pid${product_id}sid${seller_id}cd${dayjs(created_at).format('DDMMYYY')}`
+  const concatSKU = `${product_category_code}pid${product_id}sid${seller_id}cd${created_at}`
 
   return concatSKU
 }
