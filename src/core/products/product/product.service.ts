@@ -1,9 +1,10 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
-import { success } from 'src/lib'
+import { createSkuProduct, success } from 'src/lib'
 import { InsertProdutDto } from './dto'
 import { SellerProductService } from '../seller-product'
 import { ProductRepository } from './repositoy'
 import { ProductImageService } from '../product-image'
+import { ProductCategoryRepository } from '../category'
 
 @Injectable()
 export class ProductService {
@@ -13,6 +14,7 @@ export class ProductService {
     @Inject(forwardRef(() => ProductImageService))
     private pdImgService: ProductImageService,
 
+    private pdCategoryRepo: ProductCategoryRepository,
     private pdRepo: ProductRepository
   ) {}
 
@@ -92,5 +94,51 @@ export class ProductService {
     if (!data?.id) return success('product not found', { data: null })
 
     return success(null, { data })
+  }
+
+  async getProductList() {
+    const data = await this.pdRepo.findAll()
+
+    return success('getted products', { data, total: data.length })
+  }
+
+  async updateSkuProduct(seller_id: number) {
+    const products = await this.pdRepo.findAll({ sku: null }, [
+      'id',
+      'category_name',
+      'created_at',
+    ])
+    let updateParams: { id: number; sku: string }[] = []
+
+    if (products.length > 0) {
+      for (let product of products) {
+        const productCategory = await this.pdCategoryRepo.findOne(
+          { name: product.category_name },
+          ['code']
+        )
+
+        const created_at = [
+          product.created_at.getFullYear().toString(),
+          product.created_at.getMonth().toString().padStart(2, '0'),
+          product.created_at.getDate().toString().padStart(2, '0'),
+        ].join('')
+
+        if (productCategory.code) {
+          const sku = createSkuProduct({
+            product_category_code: productCategory.code,
+            seller_id,
+            product_id: product.id,
+            created_at,
+          })
+          updateParams.push({ id: product.id, sku })
+        }
+      }
+
+      for (let updateParam of updateParams) {
+        await this.pdRepo.updateProduct(updateParam)
+      }
+    }
+
+    return success('updated sku')
   }
 }

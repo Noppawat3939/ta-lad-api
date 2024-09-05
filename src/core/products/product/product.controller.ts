@@ -1,5 +1,6 @@
 import {
   Body,
+  Get,
   HttpCode,
   Param,
   Post,
@@ -54,5 +55,22 @@ export class ProductItemController {
     const seller: IJwtDecodeToken = req.user
 
     return this.service.getSellerProductById(seller.id, +id)
+  }
+
+  @SkipThrottle()
+  @Get('list')
+  getProductList() {
+    return this.service.getProductList()
+  }
+
+  @SkipThrottle()
+  @UseGuards(AuthGuard)
+  @Roles(['store'])
+  @HttpCode(HttpStatusCode.Ok)
+  @Post('sku/update')
+  updateSku(@Req() req: Request) {
+    const seller: IJwtDecodeToken = req.user
+
+    return this.service.updateSkuProduct(seller.id)
   }
 }

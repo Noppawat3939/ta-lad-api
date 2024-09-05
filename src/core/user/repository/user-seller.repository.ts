@@ -16,7 +16,7 @@ export class UserSellerRepository {
   ) {
     let select = {}
 
-    const hasSelected = selected.length > 0
+    const hasSelected = selected?.length > 0
     if (hasSelected) {
       selected.forEach((field) => (select[field] = true))
     }
