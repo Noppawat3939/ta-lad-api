@@ -97,7 +97,20 @@ export class ProductService {
   }
 
   async getProductList() {
-    const data = await this.pdRepo.findAll()
+    const products = await this.pdRepo.findAll()
+    let data = []
+
+    for (let product of products) {
+      const productId = product.id
+
+      const productImages =
+        await this.pdImgService.getImageByProductId(productId)
+
+      data.push({
+        ...product,
+        image: productImages.map((item) => item.image) || null,
+      })
+    }
 
     return success('getted products', { data, total: data.length })
   }
