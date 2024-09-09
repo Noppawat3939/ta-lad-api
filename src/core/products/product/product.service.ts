@@ -155,4 +155,25 @@ export class ProductService {
 
     return success('updated sku')
   }
+
+  async getProductBySku(sku: string) {
+    const product = await this.pdRepo.findOne({ sku })
+    let data: typeof product & { image?: string[] }
+
+    if (product?.id) {
+      const productImage = await this.pdImgService.getImageByProductId(
+        product.id
+      )
+      const image = productImage.map((item) => item.image)
+
+      data = {
+        ...product,
+        image,
+      }
+    } else {
+      data = null
+    }
+
+    return success(product === null ? 'product not found' : null, { data })
+  }
 }

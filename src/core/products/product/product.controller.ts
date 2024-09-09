@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common'
 import { ProductController } from '../decorator'
 import { ProductService } from './product.service'
-import { AuthGuard } from 'src/guards'
+import { AuthGuard, PrivateKeyGuard } from 'src/guards'
 import { Roles } from 'src/decorator'
 import { InsertProdutDto } from './dto'
 import { SkipThrottle } from '@nestjs/throttler'
@@ -58,6 +58,7 @@ export class ProductItemController {
   }
 
   @SkipThrottle()
+  @UseGuards(PrivateKeyGuard)
   @Get('list')
   getProductList() {
     return this.service.getProductList()
@@ -72,5 +73,12 @@ export class ProductItemController {
     const seller: IJwtDecodeToken = req.user
 
     return this.service.updateSkuProduct(seller.id)
+  }
+
+  @SkipThrottle()
+  @UseGuards(PrivateKeyGuard)
+  @Get('/:sku')
+  getProductItem(@Param() { sku }: { sku: string }) {
+    return this.service.getProductBySku(sku)
   }
 }
