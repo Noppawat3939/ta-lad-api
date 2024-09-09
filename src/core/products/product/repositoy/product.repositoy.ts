@@ -23,10 +23,13 @@ export class ProductRepository {
   async findAll(
     filter?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
     selected?: (keyof Entity)[],
-    order?: FindOneOptions<Entity>['order']
+    order?: FindOneOptions<Entity>['order'],
+    pagination?: { page?: number; page_size?: number }
   ) {
     let select = {}
     const hasSelected = selected?.length > 0
+    const page = pagination.page || 1
+    const pageSize = pagination.page_size || 50
 
     if (hasSelected) {
       selected.forEach((field) => (select[field] = true))
@@ -36,6 +39,8 @@ export class ProductRepository {
       where: filter,
       ...(hasSelected && { select }),
       order: order || { created_at: 'desc' },
+      skip: (page - 1) * (pageSize + 1),
+      take: pageSize,
     })
     return response
   }

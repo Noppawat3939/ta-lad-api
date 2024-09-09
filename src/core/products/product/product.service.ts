@@ -1,5 +1,5 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
-import { createSkuProduct, success } from 'src/lib'
+import { createSkuProduct, error, success } from 'src/lib'
 import { InsertProdutDto } from './dto'
 import { SellerProductService } from '../seller-product'
 import { ProductRepository } from './repositoy'
@@ -97,8 +97,20 @@ export class ProductService {
     return success(null, { data })
   }
 
-  async getProductList() {
-    const products = await this.pdRepo.findAll({ sku: Not(IsNull()) })
+  async getProductList(query: { page: string; page_size: string }) {
+    if (
+      !query.page ||
+      !query.page_size ||
+      (query.page_size && +query.page_size > 50)
+    )
+      return error.badrequest('query is invalid')
+
+    const products = await this.pdRepo.findAll(
+      { sku: Not(IsNull()) },
+      [],
+      undefined,
+      { page: +query.page, page_size: +query.page_size }
+    )
     let data = []
 
     for (let product of products) {
@@ -154,5 +166,26 @@ export class ProductService {
     }
 
     return success('updated sku')
+  }
+
+  async getProductBySku(sku: string) {
+    const product = await this.pdRepo.findOne({ sku })
+    let data: typeof product & { image?: string[] }
+
+    if (product?.id) {
+      const productImage = await this.pdImgService.getImageByProductId(
+        product.id
+      )
+      const image = productImage.map((item) => item.image)
+
+      data = {
+        ...product,
+        image,
+      }
+    } else {
+      data = null
+    }
+
+    return success(product === null ? 'product not found' : null, { data })
   }
 }
