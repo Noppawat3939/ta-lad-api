@@ -5,6 +5,7 @@ import { SellerProductService } from '../seller-product'
 import { ProductRepository } from './repositoy'
 import { ProductImageService } from '../product-image'
 import { ProductCategoryRepository } from '../category'
+import { IsNull, Not } from 'typeorm'
 
 @Injectable()
 export class ProductService {
@@ -97,7 +98,7 @@ export class ProductService {
   }
 
   async getProductList() {
-    const products = await this.pdRepo.findAll()
+    const products = await this.pdRepo.findAll({ sku: Not(IsNull()) })
     let data = []
 
     for (let product of products) {
