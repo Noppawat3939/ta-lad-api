@@ -4,6 +4,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Query,
   Req,
   UseFilters,
   UseGuards,
@@ -60,8 +61,8 @@ export class ProductItemController {
   @SkipThrottle()
   @UseGuards(PrivateKeyGuard)
   @Get('list')
-  getProductList() {
-    return this.service.getProductList()
+  getProductList(@Query() query: { page: string; page_size: string }) {
+    return this.service.getProductList(query)
   }
 
   @SkipThrottle()

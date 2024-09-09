@@ -1,5 +1,5 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
-import { createSkuProduct, success } from 'src/lib'
+import { createSkuProduct, error, success } from 'src/lib'
 import { InsertProdutDto } from './dto'
 import { SellerProductService } from '../seller-product'
 import { ProductRepository } from './repositoy'
@@ -97,8 +97,20 @@ export class ProductService {
     return success(null, { data })
   }
 
-  async getProductList() {
-    const products = await this.pdRepo.findAll({ sku: Not(IsNull()) })
+  async getProductList(query: { page: string; page_size: string }) {
+    if (
+      !query.page ||
+      !query.page_size ||
+      (query.page_size && +query.page_size > 50)
+    )
+      return error.badrequest('query is invalid')
+
+    const products = await this.pdRepo.findAll(
+      { sku: Not(IsNull()) },
+      [],
+      undefined,
+      { page: +query.page, page_size: +query.page_size }
+    )
     let data = []
 
     for (let product of products) {
