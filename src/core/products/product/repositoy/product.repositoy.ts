@@ -28,8 +28,8 @@ export class ProductRepository {
   ) {
     let select = {}
     const hasSelected = selected?.length > 0
-    const page = pagination.page || 1
-    const pageSize = pagination.page_size || 50
+    const page = pagination?.page || 1
+    const pageSize = pagination?.page_size || 50
 
     if (hasSelected) {
       selected.forEach((field) => (select[field] = true))
