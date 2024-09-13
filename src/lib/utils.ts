@@ -89,9 +89,9 @@ export const decodedSkuProduct = (sku: string) => {
   const seller_id = sidMatch ? +sidMatch[1] : null
   const product_created_at = cdMatch ? cdMatch[1] : null
 
-  if (!product_id || !seller_id || !product_created_at) {
-    throw Error('sku invalid format')
-  }
+  const isInvalid = [!product_id, !seller_id, !product_created_at].some(Boolean)
+
+  if (isInvalid) return { isError: true }
 
   return { product_category_code, product_id, seller_id, product_created_at }
 }

@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common'
 import type { Nullable } from 'src/types'
 
@@ -21,18 +22,25 @@ export const error = {
       ...(data && data),
     })
   },
-  forbidden: (message = 'forbidden', data?: object) => {
-    throw new ForbiddenException({ message, success: false, ...(data && data) })
-  },
-  notfound: (message = 'notFound', data?: object) => {
-    throw new NotFoundException({
+  badrequest: (message = 'bad request', data?: object) => {
+    throw new BadRequestException({
       message,
       success: false,
       ...(data && data),
     })
   },
-  badrequest: (message = 'bad request', data?: object) => {
-    throw new BadRequestException({
+  notccepted: (message = 'not accepted', data?: object) => {
+    throw new UnprocessableEntityException({
+      message,
+      success: false,
+      ...(data && data),
+    })
+  },
+  forbidden: (message = 'forbidden', data?: object) => {
+    throw new ForbiddenException({ message, success: false, ...(data && data) })
+  },
+  notfound: (message = 'notFound', data?: object) => {
+    throw new NotFoundException({
       message,
       success: false,
       ...(data && data),

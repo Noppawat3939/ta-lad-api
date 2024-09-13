@@ -15,4 +15,4 @@ import { SellerProductRepository } from './repository'
   providers: [SellerProductService, SellerProductRepository],
   exports: [SellerProductService],
 })
-export class SellerProducModule {}
+export class SellerProductModule {}
