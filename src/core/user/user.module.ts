@@ -12,6 +12,6 @@ import { UserRepository, UserSellerRepository } from './repository'
     TypeOrmModule.forFeature([UserEntity, AddressUserEntity, UserSellerEntity]),
   ],
   controllers: [UserController],
-  providers: [UserService, UserSellerRepository, UserRepository],
+  providers: [UserService, UserRepository, UserSellerRepository],
 })
 export class UserModule {}

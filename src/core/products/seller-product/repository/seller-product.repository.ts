@@ -26,11 +26,37 @@ export class SellerProductRepository {
     return response
   }
 
-  async findOne(filter: FindOptionsWhere<Entity>) {
+  async findOne(
+    filter: FindOptionsWhere<Entity>,
+    include?: ('product' | 'userSeller')[],
+    selected?: {
+      product?: (keyof Entity['product'])[]
+      userSeler?: (keyof Entity['userSeller'])[]
+    }
+  ) {
+    let select = { product: {}, userSeller: {} }
+    const hasSelectedProduct = selected.product?.length > 0
+    const hasSelectedSeller = selected.userSeler?.length > 0
+
+    if (hasSelectedProduct) {
+      selected['product'].forEach((field) => (select.product[field] = true))
+    }
+    if (hasSelectedSeller) {
+      selected['userSeler'].forEach(
+        (field) => (select.userSeller[field] = true)
+      )
+    }
+
     const response = await this.repo.findOne({
       where: filter,
-      relations: ['product'],
+      relations: include,
+      select,
     })
+    return response
+  }
+
+  async countSellerProduct(filter: FindOptionsWhere<Entity>) {
+    const response = await this.repo.count({ where: filter })
     return response
   }
 }

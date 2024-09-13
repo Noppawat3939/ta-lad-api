@@ -3,23 +3,23 @@ import { ProductItemController } from './product.controller'
 import { ProductService } from './product.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ProductEntity } from './entities'
-import { SellerProducModule } from '../seller-product'
+import { SellerProductModule } from '../seller-product'
 import { ProductRepository } from './repositoy'
 import { ProductImageEntity, ProductImageModule } from '../product-image'
 import { ProductCategoryEntity, ProductCategoryRepository } from '../category'
 
 @Module({
   imports: [
-    forwardRef(() => SellerProducModule),
     forwardRef(() => ProductImageModule),
+    forwardRef(() => SellerProductModule),
     TypeOrmModule.forFeature([
       ProductEntity,
       ProductImageEntity,
       ProductCategoryEntity,
     ]),
   ],
-  controllers: [ProductItemController],
   providers: [ProductService, ProductRepository, ProductCategoryRepository],
+  controllers: [ProductItemController],
   exports: [ProductService],
 })
 export class ProductModule {}
