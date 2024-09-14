@@ -147,27 +147,29 @@ export class ProductService {
 
     if (products.length > 0) {
       for (let productItem of products) {
-        const { product } = productItem
+        const {
+          product: { id: pdId, category_name, created_at: pdCreatedAt },
+        } = productItem
 
         const productCategory = await this.pdCategoryRepo.findOne(
-          { name: product.category_name },
+          { name: category_name },
           ['code']
         )
 
         const created_at = [
-          product.created_at.getFullYear().toString(),
-          product.created_at.getMonth().toString().padStart(2, '0'),
-          product.created_at.getDate().toString().padStart(2, '0'),
+          pdCreatedAt.getFullYear().toString(),
+          pdCreatedAt.getMonth().toString().padStart(2, '0'),
+          pdCreatedAt.getDate().toString().padStart(2, '0'),
         ].join('')
 
         if (productCategory.code) {
           const sku = createSkuProduct({
             product_category_code: productCategory.code,
             seller_id,
-            product_id: product.id,
+            product_id: pdId,
             created_at,
           })
-          updateDataList.push({ id: product.id, sku })
+          updateDataList.push({ id: pdId, sku })
         }
       }
 
