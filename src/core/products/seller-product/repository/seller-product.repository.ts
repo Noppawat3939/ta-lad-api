@@ -59,4 +59,13 @@ export class SellerProductRepository {
     const response = await this.repo.count({ where: filter })
     return response
   }
+
+  async findAllIncluded(filter: FindOptionsWhere<Entity>) {
+    const response = await this.repo.find({
+      where: filter,
+      relations: ['product'],
+      order: { id: 'desc' },
+    })
+    return response
+  }
 }

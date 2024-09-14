@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { SellerProductEntity } from './entities'
 import { SellerProductRepository } from './repository'
-import { DeepPartial, IsNull, Not } from 'typeorm'
+import { DeepPartial, FindOptionsWhere, IsNull, Not } from 'typeorm'
 import { decodedSkuProduct, success, error } from 'src/lib'
 
 @Injectable()
@@ -61,5 +61,11 @@ export class SellerProductService {
     } else {
       return error.notccepted('sku invalid')
     }
+  }
+
+  async findAllIncluded(filter: FindOptionsWhere<SellerProductEntity>) {
+    const response = await this.repo.findAllIncluded(filter)
+
+    return response
   }
 }

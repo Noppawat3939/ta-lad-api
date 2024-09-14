@@ -138,15 +138,17 @@ export class ProductService {
   }
 
   async updateSkuProduct(seller_id: number) {
-    const products = await this.pdRepo.findAll({ sku: null }, [
-      'id',
-      'category_name',
-      'created_at',
-    ])
-    let updateParams: { id: number; sku: string }[] = []
+    const products = await this.sellerProductService.findAllIncluded({
+      seller_id,
+      product: { sku: IsNull() },
+    })
+
+    let updateDataList: { id: number; sku: string }[] = []
 
     if (products.length > 0) {
-      for (let product of products) {
+      for (let productItem of products) {
+        const { product } = productItem
+
         const productCategory = await this.pdCategoryRepo.findOne(
           { name: product.category_name },
           ['code']
@@ -165,16 +167,16 @@ export class ProductService {
             product_id: product.id,
             created_at,
           })
-          updateParams.push({ id: product.id, sku })
+          updateDataList.push({ id: product.id, sku })
         }
       }
 
-      for (let updateParam of updateParams) {
-        await this.pdRepo.updateProduct(updateParam)
+      for (const updateData of updateDataList) {
+        await this.pdRepo.updateProduct(updateData)
       }
     }
 
-    return success('updated sku')
+    return success(products.length > 0 ? 'updated sku' : 'all data updated sku')
   }
 
   async getProductBySku(sku: string) {
