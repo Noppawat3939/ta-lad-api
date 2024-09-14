@@ -1,14 +1,26 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
-import { createSkuProduct, error, success } from 'src/lib'
+import { createSkuProduct, decodedSkuProduct, error, success } from 'src/lib'
 import { InsertProdutDto } from './dto'
 import { SellerProductService } from '../seller-product'
 import { ProductRepository } from './repositoy'
 import { ProductImageService } from '../product-image'
 import { ProductCategoryRepository } from '../category'
-import { IsNull, Not } from 'typeorm'
+import { IsNull, MoreThan, Not } from 'typeorm'
+import type { Pagination } from 'src/types'
+import { ProductEntity } from './entities'
 
 @Injectable()
 export class ProductService {
+  private checkInvalidPagination(query: Pagination, max_page_size = 50) {
+    const isInvalid = [
+      !query.page,
+      !query.page_size,
+      query.page_size && +query.page_size > max_page_size,
+    ].some(Boolean)
+
+    return isInvalid
+  }
+
   constructor(
     @Inject(forwardRef(() => SellerProductService))
     private readonly sellerProductService: SellerProductService,
@@ -97,13 +109,10 @@ export class ProductService {
     return success(null, { data })
   }
 
-  async getProductList(query: { page: string; page_size: string }) {
-    if (
-      !query.page ||
-      !query.page_size ||
-      (query.page_size && +query.page_size > 50)
-    )
-      return error.badrequest('query is invalid')
+  async getProductList(query: Pagination) {
+    const isInvalid = this.checkInvalidPagination(query)
+
+    if (isInvalid) return error.notccepted('query is invalid')
 
     const products = await this.pdRepo.findAll(
       { sku: Not(IsNull()) },
@@ -187,5 +196,62 @@ export class ProductService {
     }
 
     return success(product === null ? 'product not found' : null, { data })
+  }
+
+  async getRelateProductBySku(sku: string, query: Pagination) {
+    const isInvalid = this.checkInvalidPagination(query, 20)
+    const { isError: skuInvalid, product_category_code } =
+      decodedSkuProduct(sku)
+
+    if (skuInvalid || isInvalid)
+      return error.notccepted(`${skuInvalid ? 'sku' : 'query'} invalid`)
+
+    const category = await this.pdCategoryRepo.findOne(
+      {
+        code: product_category_code,
+      },
+      ['name']
+    )
+
+    if (category?.name) {
+      const { page, page_size } = query
+
+      let data: (ProductEntity & { image: string[] })[] = []
+
+      const products = await this.pdRepo.findAll(
+        {
+          category_name: category.name,
+          stock_amount: MoreThan(0),
+          sku: Not(sku),
+        },
+        [
+          'id',
+          'brand',
+          'sku',
+          'product_name',
+          'category_name',
+          'price',
+          'discount_end_date',
+          'discount_percent',
+          'discount_price',
+          'discount_start_date',
+        ],
+        { id: 'desc' },
+        { page: +page, page_size: +page_size }
+      )
+
+      for (const product of products) {
+        const productImages = await this.pdImgService.getImageByProductId(
+          product.id
+        )
+        const image = productImages.map(({ image }) => image)
+
+        data.push({ ...product, image })
+      }
+
+      return success(null, { total: data.length, data })
+    }
+
+    return success('products not found', [])
   }
 }

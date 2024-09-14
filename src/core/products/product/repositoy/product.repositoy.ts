@@ -30,6 +30,7 @@ export class ProductRepository {
     const hasSelected = selected?.length > 0
     const page = pagination?.page || 1
     const pageSize = pagination?.page_size || 50
+    const skip = (page - 1) * (pageSize + 1)
 
     if (hasSelected) {
       selected.forEach((field) => (select[field] = true))
@@ -39,8 +40,8 @@ export class ProductRepository {
       where: filter,
       ...(hasSelected && { select }),
       order: order || { created_at: 'desc' },
-      skip: (page - 1) * (pageSize + 1),
       take: pageSize,
+      skip,
     })
     return response
   }

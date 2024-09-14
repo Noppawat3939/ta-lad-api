@@ -17,7 +17,7 @@ import { InsertProdutDto } from './dto'
 import { SkipThrottle } from '@nestjs/throttler'
 import { ValidateBadReqExceptionFilter } from 'src/exception-filter'
 import { Request } from 'express'
-import { IJwtDecodeToken } from 'src/types'
+import { IJwtDecodeToken, Pagination } from 'src/types'
 import { HttpStatusCode } from 'axios'
 
 @ProductController('item')
@@ -61,7 +61,7 @@ export class ProductItemController {
   @SkipThrottle()
   @UseGuards(PrivateKeyGuard)
   @Get('list')
-  getProductList(@Query() query: { page: string; page_size: string }) {
+  getProductList(@Query() query: Pagination) {
     return this.service.getProductList(query)
   }
 
@@ -81,5 +81,15 @@ export class ProductItemController {
   @Get('/:sku')
   getProductItem(@Param() { sku }: { sku: string }) {
     return this.service.getProductBySku(sku)
+  }
+
+  @SkipThrottle()
+  @UseGuards(PrivateKeyGuard)
+  @Get('/relate/:sku')
+  getRelateProductBySku(
+    @Param() { sku }: { sku: string },
+    @Query() query: Pagination
+  ) {
+    return this.service.getRelateProductBySku(sku, query)
   }
 }
