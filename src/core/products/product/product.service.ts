@@ -249,7 +249,7 @@ export class ProductService {
         data.push({ ...product, image })
       }
 
-      return success('getted relate products', { total: data.length, data })
+      return success(null, { total: data.length, data })
     }
 
     return success('products not found', [])
