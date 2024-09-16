@@ -123,8 +123,8 @@ export class SellerProductService {
     return success(hasData ? null : 'products not found', {
       data: hasData
         ? {
-            new_arriaval: newArriavalList,
             all_product: allProductList,
+            new_arriaval: newArriavalList,
             seller,
           }
         : null,
