@@ -1,3 +1,4 @@
+import { checkInvalidPagination } from './../../../lib/utils'
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { createSkuProduct, decodedSkuProduct, error, success } from 'src/lib'
 import { InsertProdutDto } from './dto'
@@ -11,16 +12,6 @@ import { ProductEntity } from './entities'
 
 @Injectable()
 export class ProductService {
-  private checkInvalidPagination(query: Pagination, max_page_size = 50) {
-    const isInvalid = [
-      !query.page,
-      !query.page_size,
-      query.page_size && +query.page_size > max_page_size,
-    ].some(Boolean)
-
-    return isInvalid
-  }
-
   constructor(
     @Inject(forwardRef(() => SellerProductService))
     private readonly sellerProductService: SellerProductService,
@@ -110,7 +101,7 @@ export class ProductService {
   }
 
   async getProductList(query: Pagination) {
-    const isInvalid = this.checkInvalidPagination(query)
+    const isInvalid = checkInvalidPagination(query)
 
     if (isInvalid) return error.notccepted('query is invalid')
 
@@ -118,7 +109,7 @@ export class ProductService {
       { sku: Not(IsNull()) },
       [],
       undefined,
-      { page: +query.page, page_size: +query.page_size }
+      { page: query.page, page_size: query.page_size }
     )
     let data = []
 
@@ -224,7 +215,7 @@ export class ProductService {
   }
 
   async getRelateProductBySku(sku: string, query: Pagination) {
-    const isInvalid = this.checkInvalidPagination(query, 20)
+    const isInvalid = checkInvalidPagination(query, 20)
     const { isError: skuInvalid, product_category_code } =
       decodedSkuProduct(sku)
 
@@ -262,7 +253,7 @@ export class ProductService {
           'discount_start_date',
         ],
         { id: 'desc' },
-        { page: +page, page_size: +page_size }
+        { page, page_size }
       )
 
       for (const product of products) {

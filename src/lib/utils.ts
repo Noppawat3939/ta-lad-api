@@ -2,6 +2,7 @@ import { createHash } from 'crypto'
 import { regex } from '.'
 import { join } from 'path'
 import { readFileSync } from 'fs'
+import { Pagination } from 'src/types'
 
 type Encoding = 'base64' | 'base64url' | 'hex' | 'binary'
 
@@ -94,4 +95,25 @@ export const decodedSkuProduct = (sku: string) => {
   if (isInvalid) return { isError: true }
 
   return { product_category_code, product_id, seller_id, product_created_at }
+}
+
+export const checkInvalidPagination = (
+  query: Pagination,
+  max_page_size = 50
+) => {
+  const isInvalid = [
+    !query.page,
+    !query.page_size,
+    query.page_size && +query.page_size > max_page_size,
+  ].some(Boolean)
+
+  return isInvalid
+}
+
+export const createPaginationDB = (query?: Pagination) => {
+  const page = +query?.page || 1
+  const pageSize = +query?.page_size || 50
+  const offset = (page - 1) * (pageSize + 1)
+
+  return { take: pageSize, skip: offset }
 }

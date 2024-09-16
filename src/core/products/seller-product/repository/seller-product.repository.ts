@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { SellerProductEntity as Entity } from '../entities'
 import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm'
+import { createPaginationDB } from 'src/lib'
+import { Pagination } from 'src/types'
 
 @Injectable()
 export class SellerProductRepository {
@@ -62,12 +64,16 @@ export class SellerProductRepository {
 
   async findAllIncluded(
     filter: FindOptionsWhere<Entity>,
-    include?: ['product', 'userSeller']
+    include?: ['product', 'userSeller'],
+    pagination?: Pagination
   ) {
+    const createdPagination = createPaginationDB(pagination)
+
     const response = await this.repo.find({
       where: filter,
       relations: include || ['product'],
       order: { id: 'desc' },
+      ...createdPagination,
     })
     return response
   }
