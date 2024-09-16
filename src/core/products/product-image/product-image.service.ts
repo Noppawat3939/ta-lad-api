@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { ProductImageRepository } from './repository'
 import { ProductImageEntity } from './entities'
-import { DeepPartial } from 'typeorm'
+import { DeepPartial, FindOptionsWhere } from 'typeorm'
 
 @Injectable()
 export class ProductImageService {
@@ -17,6 +17,12 @@ export class ProductImageService {
 
   async getImageByProductId(product_id: number) {
     const data = await this.pdImageRepo.findByProductId(product_id)
+
+    return data
+  }
+
+  async findOneImageProduct(filter: FindOptionsWhere<ProductImageEntity>) {
+    const data = await this.pdImageRepo.findOne(filter)
 
     return data
   }

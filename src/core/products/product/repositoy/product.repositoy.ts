@@ -7,6 +7,8 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm'
+import { Pagination } from 'src/types'
+import { createPaginationDB } from 'src/lib'
 
 @Injectable()
 export class ProductRepository {
@@ -24,13 +26,12 @@ export class ProductRepository {
     filter?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
     selected?: (keyof Entity)[],
     order?: FindOneOptions<Entity>['order'],
-    pagination?: { page?: number; page_size?: number }
+    pagination?: Pagination
   ) {
     let select = {}
     const hasSelected = selected?.length > 0
-    const page = pagination?.page || 1
-    const pageSize = pagination?.page_size || 50
-    const skip = (page - 1) * (pageSize + 1)
+
+    const createdPagination = createPaginationDB(pagination)
 
     if (hasSelected) {
       selected.forEach((field) => (select[field] = true))
@@ -40,8 +41,7 @@ export class ProductRepository {
       where: filter,
       ...(hasSelected && { select }),
       order: order || { created_at: 'desc' },
-      take: pageSize,
-      skip,
+      ...createdPagination,
     })
     return response
   }

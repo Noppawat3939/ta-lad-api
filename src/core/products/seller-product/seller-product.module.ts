@@ -5,10 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { SellerProductEntity } from './entities'
 import { ProductModule } from '../product'
 import { SellerProductRepository } from './repository'
+import { ProductImageModule } from '../product-image'
 
 @Module({
   imports: [
     forwardRef(() => ProductModule),
+    forwardRef(() => ProductImageModule),
     TypeOrmModule.forFeature([SellerProductEntity]),
   ],
   controllers: [SellerProductController],
