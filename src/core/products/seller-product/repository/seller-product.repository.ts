@@ -60,10 +60,13 @@ export class SellerProductRepository {
     return response
   }
 
-  async findAllIncluded(filter: FindOptionsWhere<Entity>) {
+  async findAllIncluded(
+    filter: FindOptionsWhere<Entity>,
+    include?: ['product', 'userSeller']
+  ) {
     const response = await this.repo.find({
       where: filter,
-      relations: ['product'],
+      relations: include || ['product'],
       order: { id: 'desc' },
     })
     return response

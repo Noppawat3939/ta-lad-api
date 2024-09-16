@@ -16,7 +16,7 @@ export class SellerProductEntity {
   @Column()
   seller_id: number
 
-  @Column()
+  @Column({ unique: true })
   product_id: number
 
   @ManyToOne(() => ProductEntity, (product) => product.id, {

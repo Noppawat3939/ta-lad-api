@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { SellerProductEntity } from './entities'
 import { SellerProductRepository } from './repository'
-import { DeepPartial, FindOptionsWhere, IsNull, Not } from 'typeorm'
-import { decodedSkuProduct, success, error } from 'src/lib'
+import { DeepPartial, FindOptionsWhere } from 'typeorm'
 
 @Injectable()
 export class SellerProductService {
@@ -35,36 +34,11 @@ export class SellerProductService {
     return response?.product
   }
 
-  async getSellerProductBySku(sku: string) {
-    const { seller_id, isError } = decodedSkuProduct(sku)
-
-    if (!isError) {
-      const { userSeller } = await this.repo.findOne(
-        { seller_id, product: { sku: Not(IsNull()) } },
-        ['userSeller'],
-        {
-          userSeler: [
-            'id',
-            'store_name',
-            'profile_image',
-            'created_at',
-            'updated_at',
-          ],
-        }
-      )
-
-      const countProduct = await this.repo.countSellerProduct({ seller_id })
-
-      const data = { ...userSeller, product_list_count: countProduct }
-
-      return success(null, { data })
-    } else {
-      return error.notccepted('sku invalid')
-    }
-  }
-
-  async findAllIncluded(filter: FindOptionsWhere<SellerProductEntity>) {
-    const response = await this.repo.findAllIncluded(filter)
+  async findAllIncluded(
+    filter: FindOptionsWhere<SellerProductEntity>,
+    include?: ['product', 'userSeller']
+  ) {
+    const response = await this.repo.findAllIncluded(filter, include)
 
     return response
   }

@@ -182,24 +182,45 @@ export class ProductService {
   }
 
   async getProductBySku(sku: string) {
-    const product = await this.pdRepo.findOne({ sku })
-    let data: typeof product & { image?: string[] }
+    const { product_id, isError, seller_id } = decodedSkuProduct(sku)
+
+    if (isError) return error.notccepted('sku invalid')
+    const sellerProducts = await this.sellerProductService.findAllIncluded(
+      {
+        seller_id,
+      },
+      ['product', 'userSeller']
+    )
+
+    const foundProduct = sellerProducts.find(
+      (item) => item.product_id === product_id
+    )
+    const { product, userSeller } = foundProduct
+    let data: unknown
 
     if (product?.id) {
       const productImage = await this.pdImgService.getImageByProductId(
         product.id
       )
       const image = productImage.map((item) => item.image)
+      const { store_name, profile_image, updated_at, created_at } = userSeller
 
       data = {
         ...product,
         image,
+        seller: {
+          product_list_count: sellerProducts.length,
+          store_name,
+          profile_image,
+          updated_at,
+          created_at,
+        },
       }
     } else {
       data = null
     }
 
-    return success(product === null ? 'product not found' : null, { data })
+    return success(!data ? 'product not found' : null, { data })
   }
 
   async getRelateProductBySku(sku: string, query: Pagination) {
