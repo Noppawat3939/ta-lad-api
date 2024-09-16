@@ -116,12 +116,14 @@ export class ProductService {
     for (let product of products) {
       const productId = product.id
 
-      const productImages =
-        await this.pdImgService.getImageByProductId(productId)
+      const { image: productImage } =
+        await this.pdImgService.findOneImageProduct({
+          product_id: productId,
+        })
 
       data.push({
         ...product,
-        image: productImages.map((item) => item.image) || null,
+        image: [productImage],
       })
     }
 

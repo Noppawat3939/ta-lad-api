@@ -89,12 +89,17 @@ export class SellerProductService {
       const { store_name, created_at, updated_at, profile_image } =
         sellerProducts[0].userSeller
 
+      const productsSoldout = sellerProducts.map(
+        (item) => item.product.sold_amount
+      )
+
       seller = {
         store_name,
         created_at,
         updated_at,
         profile_image,
         product_list_count: sellerProducts.length,
+        products_soldout_count: productsSoldout.reduce((c, a) => c + a, 0),
       }
 
       for (const productItem of sellerProducts) {
