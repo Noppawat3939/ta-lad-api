@@ -1,14 +1,14 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { SellerProductEntity } from './entities'
 import { SellerProductRepository } from './repository'
-import { DeepPartial, FindOptionsWhere, IsNull, Not } from 'typeorm'
+import { DeepPartial, IsNull, Not } from 'typeorm'
 import {
   checkInvalidPagination,
   decodedSkuProduct,
   error,
   success,
 } from 'src/lib'
-import { Pagination } from 'src/types'
+import type { Pagination, Where } from 'src/types'
 import { ProductImageService } from '../product-image'
 
 @Injectable()
@@ -47,7 +47,7 @@ export class SellerProductService {
   }
 
   async findAllIncluded(
-    filter: FindOptionsWhere<SellerProductEntity>,
+    filter: Where<SellerProductEntity>,
     include?: ['product', 'userSeller']
   ) {
     const response = await this.repo.findAllIncluded(filter, include)

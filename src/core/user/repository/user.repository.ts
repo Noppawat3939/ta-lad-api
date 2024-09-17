@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserEntity as Entity } from '../entities'
-import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm'
+import { DeepPartial, Repository } from 'typeorm'
+import type { Where } from 'src/types'
 
 @Injectable()
 export class UserRepository {
@@ -10,7 +11,7 @@ export class UserRepository {
     private repo: Repository<Entity>
   ) {}
 
-  async findOne(filter: FindOptionsWhere<Entity>, selected?: (keyof Entity)[]) {
+  async findOne(filter: Where<Entity>, selected?: (keyof Entity)[]) {
     let select = {}
     const hasSelected = selected?.length > 0
 
