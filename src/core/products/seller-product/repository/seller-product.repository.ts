@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { SellerProductEntity as Entity } from '../entities'
 import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm'
 import { createPaginationDB } from 'src/lib'
-import { Pagination } from 'src/types'
+import type { Pagination, Where } from 'src/types'
+
+type Included = ('product' | 'userSeller' | 'groupProduct')[]
 
 @Injectable()
 export class SellerProductRepository {
@@ -18,10 +20,10 @@ export class SellerProductRepository {
     return response
   }
 
-  async findAllAndCount(seller_id: number) {
+  async findAllAndCount(seller_id: number, include?: Included) {
     const response = await this.repo.findAndCount({
       where: { seller_id },
-      relations: ['product'],
+      relations: include || ['product'],
       order: { product: { created_at: 'desc' } },
     })
 
@@ -29,8 +31,8 @@ export class SellerProductRepository {
   }
 
   async findOne(
-    filter: FindOptionsWhere<Entity>,
-    include?: ('product' | 'userSeller')[],
+    filter: Where<Entity>,
+    include?: Included,
     selected?: {
       product?: (keyof Entity['product'])[]
       userSeler?: (keyof Entity['userSeller'])[]
@@ -57,14 +59,14 @@ export class SellerProductRepository {
     return response
   }
 
-  async countSellerProduct(filter: FindOptionsWhere<Entity>) {
+  async countSellerProduct(filter: Where<Entity>) {
     const response = await this.repo.count({ where: filter })
     return response
   }
 
   async findAllIncluded(
-    filter: FindOptionsWhere<Entity>,
-    include?: ['product', 'userSeller'],
+    filter: Where<Entity>,
+    include?: ('product' | 'userSeller')[],
     pagination?: Pagination
   ) {
     const createdPagination = createPaginationDB(pagination)
@@ -75,6 +77,11 @@ export class SellerProductRepository {
       order: { id: 'desc' },
       ...createdPagination,
     })
+    return response
+  }
+
+  async update(filter: FindOptionsWhere<Entity>, params: DeepPartial<Entity>) {
+    const response = await this.repo.update(filter, params)
     return response
   }
 }

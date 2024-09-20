@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ProductImageEntity as Entity } from '../entities'
-import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm'
+import { DeepPartial, Repository } from 'typeorm'
+import { Where } from 'src/types'
 
 @Injectable()
 export class ProductImageRepository {
@@ -22,7 +23,7 @@ export class ProductImageRepository {
     return response
   }
 
-  async findOne(filter: FindOptionsWhere<Entity>) {
+  async findOne(filter: Where<Entity>) {
     const response = await this.repo.findOne({ where: filter })
     return response
   }

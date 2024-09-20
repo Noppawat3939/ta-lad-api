@@ -8,7 +8,7 @@ import {
   error,
   success,
 } from 'src/lib'
-import { Pagination } from 'src/types'
+import type { Pagination, Where } from 'src/types'
 import { ProductImageService } from '../product-image'
 
 @Injectable()
@@ -47,8 +47,8 @@ export class SellerProductService {
   }
 
   async findAllIncluded(
-    filter: FindOptionsWhere<SellerProductEntity>,
-    include?: ['product', 'userSeller']
+    filter: Where<SellerProductEntity>,
+    include?: ('product' | 'userSeller')[]
   ) {
     const response = await this.repo.findAllIncluded(filter, include)
 
@@ -129,5 +129,13 @@ export class SellerProductService {
           }
         : null,
     })
+  }
+
+  async update(
+    filter: FindOptionsWhere<SellerProductEntity>,
+    params: DeepPartial<SellerProductEntity>
+  ) {
+    const response = await this.repo.update(filter, params)
+    return response
   }
 }

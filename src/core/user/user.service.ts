@@ -7,9 +7,8 @@ import {
 } from './dto'
 import { error, hashCrypto, success, validIdNumber } from 'src/lib'
 import { UserEntity, UserSellerEntity } from './entities'
-import { FindOptionsWhere } from 'typeorm'
 import { UserRepository, UserSellerRepository } from './repository'
-import type { Role } from 'src/types'
+import type { Role, Where } from 'src/types'
 
 type ValidationFieldsDto = ValidatePhoneNumberDto &
   ValidateEmailDto &
@@ -25,7 +24,7 @@ export class UserService {
 
   async validationField(dto: ValidationFieldsDto, checkStore = false) {
     let message: string | null
-    let filter: FindOptionsWhere<UserEntity | UserSellerEntity>
+    let filter: Where<UserEntity | UserSellerEntity>
     let response = { available: false, field: '', error_message: '' }
 
     if (Object.values(dto).length !== 1) return error.badrequest('body invalid')
@@ -105,26 +104,26 @@ export class UserService {
 
   async getUserByRole({ email, role }: { email: string; role: Role }) {
     let data: UserEntity | UserSellerEntity
+
+    const selectedCommon = [
+      'id',
+      'email',
+      'profile_image',
+      'created_at',
+      'updated_at',
+      'role',
+    ] as (keyof typeof data)[]
+
     if (role === 'user') {
       data = await this.userRepo.findOne({ email }, [
-        'id',
-        'email',
+        ...selectedCommon,
         'first_name',
         'last_name',
-        'profile_image',
-        'created_at',
-        'updated_at',
-        'role',
       ])
     } else {
       data = await this.userSellerRepo.findOne({ email }, [
-        'id',
-        'email',
+        ...selectedCommon,
         'store_name',
-        'profile_image',
-        'created_at',
-        'updated_at',
-        'role',
       ])
     }
 

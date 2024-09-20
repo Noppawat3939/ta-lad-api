@@ -1,12 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ProductCategoryEntity as Entity } from '../entities'
-import {
-  DeepPartial,
-  FindOneOptions,
-  FindOptionsWhere,
-  Repository,
-} from 'typeorm'
+import { DeepPartial, Repository } from 'typeorm'
+import type { SortOrder, Where } from 'src/types'
 
 @Injectable()
 export class ProductCategoryRepository {
@@ -20,7 +16,7 @@ export class ProductCategoryRepository {
     return response
   }
 
-  async findAllAndCount(order?: FindOneOptions<Entity>['order']) {
+  async findAllAndCount(order?: SortOrder<Entity>) {
     const response = await this.repo.findAndCount({
       select: { id: true, name: true, image: true },
       order: order || { id: 'desc' },
@@ -29,10 +25,7 @@ export class ProductCategoryRepository {
     return response
   }
 
-  async findOne(
-    filter?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[],
-    selected?: (keyof Entity)[]
-  ) {
+  async findOne(filter?: Where<Entity>, selected?: (keyof Entity)[]) {
     let select = {}
     const hasSelected = selected?.length > 0
     if (hasSelected) {

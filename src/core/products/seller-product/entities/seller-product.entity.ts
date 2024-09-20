@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import { ProductEntity } from '../../product'
+import { GroupProductsEntity } from '../../group-products'
 
 @Entity('seller_product')
 export class SellerProductEntity {
@@ -19,6 +20,9 @@ export class SellerProductEntity {
   @Column({ unique: true })
   product_id: number
 
+  @Column({ default: null })
+  group_product_id: number
+
   @ManyToOne(() => ProductEntity, (product) => product.id, {
     onDelete: 'CASCADE',
   })
@@ -30,4 +34,8 @@ export class SellerProductEntity {
   })
   @JoinColumn({ name: 'seller_id' })
   userSeller: UserSellerEntity
+
+  @ManyToOne(() => GroupProductsEntity, (groupPd) => groupPd.id)
+  @JoinColumn({ name: 'group_product_id' })
+  groupProduct: GroupProductsEntity
 }
