@@ -75,10 +75,9 @@ export class GroupProductsService {
   async unGroup(seller_id: number, id: number | number[]) {
     if (!id) return error.badrequest()
 
-    const grouppedProducts = await this.repo.findAll({
-      id: Array.isArray(id) ? In(id) : id,
-      seller_id,
-    })
+    const queryId = Array.isArray(id) ? In(id) : id
+
+    const grouppedProducts = await this.repo.findAll({ id: queryId, seller_id })
 
     if (grouppedProducts.length > 0) {
       for (const grouppedItem of grouppedProducts) {
