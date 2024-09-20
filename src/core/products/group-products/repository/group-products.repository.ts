@@ -15,8 +15,13 @@ export class GroupProductsRepository {
     return response
   }
 
-  async fineOne(filter: Where<Entity>) {
+  async findOne(filter: Where<Entity>) {
     const response = await this.repo.findOne({ where: filter })
+    return response
+  }
+
+  async findAll(filter: Where<Entity>) {
+    const response = await this.repo.find({ where: filter })
     return response
   }
 

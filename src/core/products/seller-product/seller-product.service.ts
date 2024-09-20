@@ -1,7 +1,7 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { SellerProductEntity } from './entities'
 import { SellerProductRepository } from './repository'
-import { DeepPartial, IsNull, Not } from 'typeorm'
+import { DeepPartial, FindOptionsWhere, IsNull, Not } from 'typeorm'
 import {
   checkInvalidPagination,
   decodedSkuProduct,
@@ -48,7 +48,7 @@ export class SellerProductService {
 
   async findAllIncluded(
     filter: Where<SellerProductEntity>,
-    include?: ['product', 'userSeller']
+    include?: ('product' | 'userSeller')[]
   ) {
     const response = await this.repo.findAllIncluded(filter, include)
 
@@ -129,5 +129,13 @@ export class SellerProductService {
           }
         : null,
     })
+  }
+
+  async update(
+    filter: FindOptionsWhere<SellerProductEntity>,
+    params: DeepPartial<SellerProductEntity>
+  ) {
+    const response = await this.repo.update(filter, params)
+    return response
   }
 }
