@@ -9,6 +9,7 @@ import { In } from 'typeorm'
 export class GroupProductsService {
   constructor(
     private repo: GroupProductsRepository,
+
     @Inject(forwardRef(() => SellerProductService))
     private sellerProductService: SellerProductService
   ) {}
@@ -69,5 +70,31 @@ export class GroupProductsService {
     }
 
     return success('inserted success')
+  }
+
+  async unGroup(seller_id: number, id: number | number[]) {
+    if (!id) return error.badrequest()
+
+    const grouppedProducts = await this.repo.findAll({
+      id: Array.isArray(id) ? In(id) : id,
+      seller_id,
+    })
+
+    if (grouppedProducts.length > 0) {
+      for (const grouppedItem of grouppedProducts) {
+        await this.sellerProductService.update(
+          {
+            product_id: In(grouppedItem.product_ids),
+            seller_id: grouppedItem.seller_id,
+          },
+          { group_product_id: null }
+        )
+      }
+
+      const groupProductIds = grouppedProducts.map((item) => item.id)
+      await this.repo.delete({ id: In(groupProductIds) })
+    }
+
+    return success('updated group product')
   }
 }

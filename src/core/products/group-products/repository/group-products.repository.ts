@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { GroupProductsEntity as Entity } from '../entities'
-import { DeepPartial, Repository } from 'typeorm'
+import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm'
 import type { Where } from 'src/types'
 
 @Injectable()
@@ -30,8 +30,8 @@ export class GroupProductsRepository {
     return response
   }
 
-  async deleteById(id: number) {
-    const response = await this.repo.delete(id)
+  async delete(filter: FindOptionsWhere<Entity>) {
+    const response = await this.repo.delete(filter)
     return response
   }
 }

@@ -19,4 +19,13 @@ export class GroupProductsController {
 
     return this.service.insert(user.id, dto)
   }
+
+  @UseGuards(AuthGuard)
+  @Roles(['store'])
+  @Post('un-group')
+  unGroup(@Req() req: Request, @Body() dto: { id: number | number[] }) {
+    const user: IJwtDecodeToken = req.user
+
+    return this.service.unGroup(user.id, dto.id)
+  }
 }
