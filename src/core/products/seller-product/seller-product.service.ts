@@ -8,7 +8,7 @@ import {
   error,
   success,
 } from 'src/lib'
-import type { Pagination, Where } from 'src/types'
+import type { IncludedSellerProduct, Pagination, Where } from 'src/types'
 import { ProductImageService } from '../product-image'
 
 @Injectable()
@@ -24,8 +24,11 @@ export class SellerProductService {
     return response
   }
 
-  async findProductBySellerId(seller_id: number) {
-    const response = await this.repo.findAllAndCount(seller_id)
+  async findProductBySellerId(
+    seller_id: number,
+    included?: IncludedSellerProduct
+  ) {
+    const response = await this.repo.findAllAndCount(seller_id, included)
     return response
   }
 
@@ -48,7 +51,7 @@ export class SellerProductService {
 
   async findAllIncluded(
     filter: Where<SellerProductEntity>,
-    include?: ('product' | 'userSeller')[]
+    include?: IncludedSellerProduct
   ) {
     const response = await this.repo.findAllIncluded(filter, include)
 

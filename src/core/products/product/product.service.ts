@@ -9,6 +9,7 @@ import { ProductCategoryRepository } from '../category'
 import { IsNull, MoreThan, Not } from 'typeorm'
 import type { Pagination } from 'src/types'
 import { ProductEntity } from './entities'
+import { GroupProductsRepository } from '../group-products'
 
 @Injectable()
 export class ProductService {
@@ -19,7 +20,8 @@ export class ProductService {
     private pdImgService: ProductImageService,
 
     private pdCategoryRepo: ProductCategoryRepository,
-    private pdRepo: ProductRepository
+    private pdRepo: ProductRepository,
+    private groupPdRepo: GroupProductsRepository
   ) {}
 
   async insertProduct(seller_id: number, dto: InsertProdutDto['data']) {
@@ -71,8 +73,10 @@ export class ProductService {
   }
 
   async getSellerProductList(seller_id: number) {
-    const [data, total] =
-      await this.sellerProductService.findProductBySellerId(seller_id)
+    const [data, total] = await this.sellerProductService.findProductBySellerId(
+      seller_id,
+      ['product', 'groupProduct']
+    )
 
     let response = []
 
@@ -83,7 +87,15 @@ export class ProductService {
 
       const image = pdImage.length > 0 ? pdImage.map((item) => item.image) : []
 
-      response.push({ ...productItem['product'], image })
+      if (productItem.groupProduct?.id) {
+        delete productItem.groupProduct['seller_id']
+      }
+
+      response.push({
+        ...productItem['product'],
+        image,
+        group_product: productItem.groupProduct,
+      })
     }
 
     return success(null, { data: response, total })
