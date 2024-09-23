@@ -203,27 +203,23 @@ export class ProductService {
 
     const { product, userSeller } = foundProduct
     let data: unknown
-    let group_products = []
-
-    const groupedProducts = await this.groupPdRepo.findOne({
-      seller_id,
-      product_ids: ArrayContains([product.id]),
-    })
-
-    const filteredGroupProductIds = groupedProducts.product_ids?.filter(
-      (item) => item !== product?.id
-    )
+    let groupProducts = []
 
     if (product?.id) {
-      if (filteredGroupProductIds?.length > 0) {
-        for (const productId of filteredGroupProductIds) {
+      const groupedProducts = await this.groupPdRepo.findOne({
+        seller_id,
+        product_ids: ArrayContains([product.id]),
+      })
+
+      if (groupedProducts?.product_ids?.length > 0) {
+        for (const productId of groupedProducts.product_ids) {
           const groupProduct = await this.pdRepo.findOne({ id: productId })
 
           const productImage = (
             await this.pdImgService.getImageByProductId(groupProduct.id)
           ).map((item) => item.image)
 
-          group_products.push({ ...groupProduct, image: productImage })
+          groupProducts.push({ ...groupProduct, image: productImage })
         }
       }
 
@@ -236,7 +232,13 @@ export class ProductService {
       data = {
         ...product,
         image,
-        group_products,
+        ...(groupedProducts?.id && {
+          group_products: {
+            id: groupedProducts.id,
+            name: groupedProducts.name,
+            products: groupProducts,
+          },
+        }),
         seller: {
           product_list_count: sellerProducts.length,
           store_name,
