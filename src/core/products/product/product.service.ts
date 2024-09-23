@@ -6,7 +6,7 @@ import { SellerProductService } from '../seller-product'
 import { ProductRepository } from './repositoy'
 import { ProductImageService } from '../product-image'
 import { ProductCategoryRepository } from '../category'
-import { IsNull, MoreThan, Not } from 'typeorm'
+import { ArrayContains, IsNull, MoreThan, Not } from 'typeorm'
 import type { Pagination } from 'src/types'
 import { ProductEntity } from './entities'
 import { GroupProductsRepository } from '../group-products'
@@ -200,10 +200,33 @@ export class ProductService {
     const foundProduct = sellerProducts.find(
       (item) => item.product_id === product_id
     )
+
     const { product, userSeller } = foundProduct
     let data: unknown
+    let group_products = []
+
+    const groupedProducts = await this.groupPdRepo.findOne({
+      seller_id,
+      product_ids: ArrayContains([product.id]),
+    })
+
+    const filteredGroupProductIds = groupedProducts.product_ids?.filter(
+      (item) => item !== product?.id
+    )
 
     if (product?.id) {
+      if (filteredGroupProductIds?.length > 0) {
+        for (const productId of filteredGroupProductIds) {
+          const groupProduct = await this.pdRepo.findOne({ id: productId })
+
+          const productImage = (
+            await this.pdImgService.getImageByProductId(groupProduct.id)
+          ).map((item) => item.image)
+
+          group_products.push({ ...groupProduct, image: productImage })
+        }
+      }
+
       const productImage = await this.pdImgService.getImageByProductId(
         product.id
       )
@@ -213,6 +236,7 @@ export class ProductService {
       data = {
         ...product,
         image,
+        group_products,
         seller: {
           product_list_count: sellerProducts.length,
           store_name,
