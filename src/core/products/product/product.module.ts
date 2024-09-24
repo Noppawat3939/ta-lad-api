@@ -7,7 +7,7 @@ import { SellerProductModule } from '../seller-product'
 import { ProductRepository } from './repositoy'
 import { ProductImageEntity, ProductImageModule } from '../product-image'
 import { ProductCategoryEntity, ProductCategoryRepository } from '../category'
-import { GroupProductsModule } from '../group-products'
+import { GroupProductsEntity, GroupProductsRepository } from '../group-products'
 
 @Module({
   imports: [
@@ -17,10 +17,15 @@ import { GroupProductsModule } from '../group-products'
       ProductEntity,
       ProductImageEntity,
       ProductCategoryEntity,
+      GroupProductsEntity,
     ]),
-    GroupProductsModule,
   ],
-  providers: [ProductService, ProductRepository, ProductCategoryRepository],
+  providers: [
+    ProductService,
+    ProductRepository,
+    ProductCategoryRepository,
+    GroupProductsRepository,
+  ],
   controllers: [ProductItemController],
   exports: [ProductService],
 })

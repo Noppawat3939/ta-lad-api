@@ -3,9 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { SellerProductEntity as Entity } from '../entities'
 import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm'
 import { createPaginationDB } from 'src/lib'
-import type { Pagination, Where } from 'src/types'
-
-type Included = ('product' | 'userSeller' | 'groupProduct')[]
+import type { IncludedSellerProduct, Pagination, Where } from 'src/types'
 
 @Injectable()
 export class SellerProductRepository {
@@ -20,7 +18,7 @@ export class SellerProductRepository {
     return response
   }
 
-  async findAllAndCount(seller_id: number, include?: Included) {
+  async findAllAndCount(seller_id: number, include?: IncludedSellerProduct) {
     const response = await this.repo.findAndCount({
       where: { seller_id },
       relations: include || ['product'],
@@ -32,7 +30,7 @@ export class SellerProductRepository {
 
   async findOne(
     filter: Where<Entity>,
-    include?: Included,
+    include?: IncludedSellerProduct,
     selected?: {
       product?: (keyof Entity['product'])[]
       userSeler?: (keyof Entity['userSeller'])[]
@@ -66,7 +64,7 @@ export class SellerProductRepository {
 
   async findAllIncluded(
     filter: Where<Entity>,
-    include?: ('product' | 'userSeller')[],
+    include?: IncludedSellerProduct,
     pagination?: Pagination
   ) {
     const createdPagination = createPaginationDB(pagination)

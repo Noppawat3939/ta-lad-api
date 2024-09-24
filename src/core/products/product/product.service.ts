@@ -6,9 +6,10 @@ import { SellerProductService } from '../seller-product'
 import { ProductRepository } from './repositoy'
 import { ProductImageService } from '../product-image'
 import { ProductCategoryRepository } from '../category'
-import { IsNull, MoreThan, Not } from 'typeorm'
+import { ArrayContains, IsNull, MoreThan, Not } from 'typeorm'
 import type { Pagination } from 'src/types'
 import { ProductEntity } from './entities'
+import { GroupProductsRepository } from '../group-products'
 
 @Injectable()
 export class ProductService {
@@ -19,7 +20,8 @@ export class ProductService {
     private pdImgService: ProductImageService,
 
     private pdCategoryRepo: ProductCategoryRepository,
-    private pdRepo: ProductRepository
+    private pdRepo: ProductRepository,
+    private groupPdRepo: GroupProductsRepository
   ) {}
 
   async insertProduct(seller_id: number, dto: InsertProdutDto['data']) {
@@ -71,8 +73,10 @@ export class ProductService {
   }
 
   async getSellerProductList(seller_id: number) {
-    const [data, total] =
-      await this.sellerProductService.findProductBySellerId(seller_id)
+    const [data, total] = await this.sellerProductService.findProductBySellerId(
+      seller_id,
+      ['product', 'groupProduct']
+    )
 
     let response = []
 
@@ -83,7 +87,15 @@ export class ProductService {
 
       const image = pdImage.length > 0 ? pdImage.map((item) => item.image) : []
 
-      response.push({ ...productItem['product'], image })
+      if (productItem.groupProduct?.id) {
+        delete productItem.groupProduct['seller_id']
+      }
+
+      response.push({
+        ...productItem['product'],
+        image,
+        group_product: productItem.groupProduct,
+      })
     }
 
     return success(null, { data: response, total })
@@ -188,10 +200,29 @@ export class ProductService {
     const foundProduct = sellerProducts.find(
       (item) => item.product_id === product_id
     )
+
     const { product, userSeller } = foundProduct
     let data: unknown
+    let groupProducts = []
 
     if (product?.id) {
+      const groupedProducts = await this.groupPdRepo.findOne({
+        seller_id,
+        product_ids: ArrayContains([product.id]),
+      })
+
+      if (groupedProducts?.product_ids?.length > 0) {
+        for (const productId of groupedProducts.product_ids) {
+          const groupProduct = await this.pdRepo.findOne({ id: productId })
+
+          const productImage = (
+            await this.pdImgService.getImageByProductId(groupProduct.id)
+          ).map((item) => item.image)
+
+          groupProducts.push({ ...groupProduct, image: productImage })
+        }
+      }
+
       const productImage = await this.pdImgService.getImageByProductId(
         product.id
       )
@@ -201,6 +232,13 @@ export class ProductService {
       data = {
         ...product,
         image,
+        ...(groupedProducts?.id && {
+          group_products: {
+            id: groupedProducts.id,
+            name: groupedProducts.name,
+            products: groupProducts,
+          },
+        }),
         seller: {
           product_list_count: sellerProducts.length,
           store_name,
