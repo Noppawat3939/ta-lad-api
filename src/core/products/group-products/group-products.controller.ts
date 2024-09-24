@@ -1,4 +1,11 @@
-import { Body, Post, Req, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common'
 import { ProductController } from '../decorator'
 import { AuthGuard } from 'src/guards'
 import { Roles } from 'src/decorator'
@@ -12,6 +19,7 @@ export class GroupProductsController {
   constructor(private readonly service: GroupProductsService) {}
 
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Roles(['store'])
   @Post('insert')
   insertGroup(@Req() req: Request, @Body() dto: InsertGroupProductsDto) {
@@ -21,11 +29,15 @@ export class GroupProductsController {
   }
 
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Roles(['store'])
-  @Post('un-group')
-  unGroup(@Req() req: Request, @Body() dto: { id: number | number[] }) {
+  @Post('ungroup')
+  unGroup(
+    @Req() req: Request,
+    @Body() { group_product_id }: { group_product_id: number | number[] }
+  ) {
     const user: IJwtDecodeToken = req.user
 
-    return this.service.unGroup(user.id, dto.id)
+    return this.service.unGroup(user.id, group_product_id)
   }
 }
