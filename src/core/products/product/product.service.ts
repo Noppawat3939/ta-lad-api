@@ -10,6 +10,7 @@ import { ArrayContains, IsNull, MoreThan, Not } from 'typeorm'
 import type { Pagination } from 'src/types'
 import { ProductEntity } from './entities'
 import { GroupProductsRepository } from '../group-products'
+import { ProductShippingRepository } from '../product-shipping'
 
 @Injectable()
 export class ProductService {
@@ -21,12 +22,13 @@ export class ProductService {
 
     private pdCategoryRepo: ProductCategoryRepository,
     private pdRepo: ProductRepository,
-    private groupPdRepo: GroupProductsRepository
+    private groupPdRepo: GroupProductsRepository,
+    private pdShippingRepo: ProductShippingRepository //TODO create shipping
   ) {}
 
   async insertProduct(seller_id: number, dto: InsertProdutDto['data']) {
     let createProductList: InsertProdutDto['data'] = []
-    let productImagesUrl: string[]
+    let productImagesUrl: { image: string; is_main: boolean }[]
 
     for (let index = 0; index < dto.length; index++) {
       const productItem = dto[index]
@@ -56,10 +58,9 @@ export class ProductService {
 
         if (productImagesUrl?.length > 0) {
           const createProductImageList = productImagesUrl.map((image) => ({
-            image,
+            ...image,
             product_id: newProduct.id,
           }))
-
           promiseFunc.push(
             this.pdImgService.insertImage(createProductImageList)
           )

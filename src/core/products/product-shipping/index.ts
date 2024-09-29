@@ -1,0 +1,6 @@
+export * from './product-shipping.module'
+export * from './product-shipping.controller'
+export * from './product-shipping.service'
+export * from './entities'
+export * from './enum'
+export * from './repository'

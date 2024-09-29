@@ -27,7 +27,7 @@ class ProductParams {
   brand: string
 
   @IsOptional()
-  product_image?: string[]
+  product_image?: { image: string; is_main: boolean }[]
 
   @IsNotEmpty({ message: 'price is required' })
   @IsNumber()

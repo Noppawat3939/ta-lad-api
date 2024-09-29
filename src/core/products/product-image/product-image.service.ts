@@ -4,11 +4,13 @@ import { ProductImageEntity } from './entities'
 import { DeepPartial } from 'typeorm'
 import type { Where } from 'src/types'
 
+type OmiitedId = Omit<ProductImageEntity, 'id'>
+
 @Injectable()
 export class ProductImageService {
   constructor(private pdImageRepo: ProductImageRepository) {}
 
-  async insertImage(dto: DeepPartial<Omit<ProductImageEntity, 'id'>>[]) {
+  async insertImage(dto: DeepPartial<OmiitedId>[]) {
     if (Object.values(dto).length === 0) return
 
     const data = await this.pdImageRepo.create(dto)
