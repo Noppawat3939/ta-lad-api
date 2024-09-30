@@ -47,6 +47,9 @@ export class ProductEntity {
   @Column({ default: null })
   sku?: string
 
+  @Column({ default: false })
+  is_preorder?: boolean
+
   @CreateDateColumn({
     type: 'timestamp',
   })
