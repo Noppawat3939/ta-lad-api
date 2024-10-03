@@ -29,13 +29,13 @@ export class ProductEntity {
   @Column({ default: 0 })
   stock_amount: number
 
-  @Column({ default: 0 })
+  @Column({ default: null, nullable: true })
   sold_amount?: number
 
-  @Column({ default: 0 })
+  @Column({ default: null, nullable: true })
   discount_percent?: number
 
-  @Column({ default: 0 })
+  @Column({ default: null, nullable: true })
   discount_price?: number
 
   @Column({ default: null })
@@ -46,6 +46,9 @@ export class ProductEntity {
 
   @Column({ default: null })
   sku?: string
+
+  @Column({ default: false })
+  is_preorder?: boolean
 
   @CreateDateColumn({
     type: 'timestamp',

@@ -8,6 +8,10 @@ import { ProductRepository } from './repositoy'
 import { ProductImageEntity, ProductImageModule } from '../product-image'
 import { ProductCategoryEntity, ProductCategoryRepository } from '../category'
 import { GroupProductsEntity, GroupProductsRepository } from '../group-products'
+import {
+  ProductShippingEntity,
+  ProductShippingRepository,
+} from '../product-shipping'
 
 @Module({
   imports: [
@@ -18,6 +22,7 @@ import { GroupProductsEntity, GroupProductsRepository } from '../group-products'
       ProductImageEntity,
       ProductCategoryEntity,
       GroupProductsEntity,
+      ProductShippingEntity,
     ]),
   ],
   providers: [
@@ -25,6 +30,7 @@ import { GroupProductsEntity, GroupProductsRepository } from '../group-products'
     ProductRepository,
     ProductCategoryRepository,
     GroupProductsRepository,
+    ProductShippingRepository,
   ],
   controllers: [ProductItemController],
   exports: [ProductService],

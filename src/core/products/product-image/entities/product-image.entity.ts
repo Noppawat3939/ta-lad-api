@@ -18,6 +18,9 @@ export class ProductImageEntity {
   @Column()
   product_id: number
 
+  @Column({ default: false })
+  is_main?: boolean
+
   @ManyToOne(() => ProductEntity, (product) => product.id)
   @JoinColumn({ name: 'product_id' })
   product: ProductEntity
