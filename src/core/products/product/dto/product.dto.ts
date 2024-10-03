@@ -2,6 +2,7 @@ import { Type } from 'class-transformer'
 import {
   ArrayNotEmpty,
   IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -27,7 +28,7 @@ class ProductParams {
   brand: string
 
   @IsOptional()
-  product_image?: { image: string; is_main: boolean }[]
+  product_images?: { image: string; is_main: boolean }[]
 
   @IsNotEmpty({ message: 'price is required' })
   @IsNumber()
@@ -42,21 +43,40 @@ class ProductParams {
   @IsNumber()
   stock_amount?: number
 
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   discount_percent?: number
 
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   discount_price?: number
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   discount_start_date?: string
 
   @IsOptional()
   @IsString()
   discount_end_date?: string
+
+  @IsOptional()
+  @IsBoolean()
+  is_preorder?: boolean
+
+  @IsString()
+  @IsNotEmpty({ message: 'provider is required' })
+  @MinLength(1)
+  provider: string
+
+  @IsNumber()
+  @IsNotEmpty({ message: 'delivery_time is required' })
+  @Min(1)
+  delivery_time: number
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  shipping_fee: number
 }
 
 export class InsertProdutDto {

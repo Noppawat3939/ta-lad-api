@@ -23,51 +23,69 @@ export class ProductService {
     private pdCategoryRepo: ProductCategoryRepository,
     private pdRepo: ProductRepository,
     private groupPdRepo: GroupProductsRepository,
-    private pdShippingRepo: ProductShippingRepository //TODO create shipping
+    private pdShippingRepo: ProductShippingRepository
   ) {}
 
   async insertProduct(seller_id: number, dto: InsertProdutDto['data']) {
-    let createProductList: InsertProdutDto['data'] = []
-    let productImagesUrl: { image: string; is_main: boolean }[]
+    let createProductList = []
+    let productImagesUrl: {
+      image: string
+      is_main: boolean
+      product_id?: number
+    }[]
+    let createProductShippingParams = []
 
-    for (let index = 0; index < dto.length; index++) {
-      const productItem = dto[index]
+    for (const createParam of dto) {
+      const {
+        product_images,
+        delivery_time,
+        provider,
+        shipping_fee,
+        ...restParams
+      } = createParam
 
-      const { product_image, ...restProductParams } = productItem
-
-      if (product_image?.length > 0) {
-        productImagesUrl = product_image
+      if (product_images.length > 0) {
+        productImagesUrl = product_images
       }
 
-      createProductList.push(restProductParams)
+      createProductList.push(restParams)
+      createProductShippingParams.push({
+        provider,
+        delivery_time,
+        shipping_fee,
+      })
     }
 
-    const newProducts = await this.pdRepo.createProduct(createProductList)
+    const createdProduct = await this.pdRepo.createProduct(createProductList)
 
-    let promiseFunc = []
-    for (let index = 0; index < newProducts.length; index++) {
-      const newProduct = newProducts[index]
+    let newProductIds: number[] = []
 
-      if (newProduct) {
+    newProductIds = createdProduct.map((item) => item.id)
+
+    if (newProductIds.length > 0) {
+      let promiseFunc = []
+
+      for (const product_id of newProductIds) {
         promiseFunc.push(
           this.sellerProductService.createSellerProduct({
-            product_id: newProduct.id,
             seller_id,
+            product_id,
           })
         )
-
-        if (productImagesUrl?.length > 0) {
-          const createProductImageList = productImagesUrl.map((image) => ({
-            ...image,
-            product_id: newProduct.id,
-          }))
-          promiseFunc.push(
-            this.pdImgService.insertImage(createProductImageList)
-          )
-        }
-
-        await Promise.all(promiseFunc)
+        const createShippingParams = createProductShippingParams.map(
+          (item) => ({ ...item, product_id })
+        )
+        promiseFunc.push(this.pdShippingRepo.create(createShippingParams))
+        const createProductImageParams = productImagesUrl.map((item) => ({
+          ...item,
+          product_id,
+        }))
+        promiseFunc.push(
+          this.pdImgService.insertImage(createProductImageParams)
+        )
       }
+
+      await Promise.all(promiseFunc)
     }
 
     return success('inserted product')
