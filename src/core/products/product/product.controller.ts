@@ -92,4 +92,14 @@ export class ProductItemController {
   ) {
     return this.service.getRelateProductBySku(sku, query)
   }
+
+  @SkipThrottle()
+  @UseGuards(PrivateKeyGuard)
+  @Get('/list/:category_name')
+  getProductsByCategoryName(
+    @Param() { category_name }: { category_name: string },
+    @Query() query: Pagination
+  ) {
+    return this.service.getProductsByCategory(category_name, query)
+  }
 }

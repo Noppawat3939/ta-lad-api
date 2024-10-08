@@ -140,7 +140,7 @@ export class ProductService {
       { sku: Not(IsNull()) },
       [],
       undefined,
-      { page: query.page, page_size: query.page_size }
+      query
     )
     let data = []
 
@@ -328,5 +328,32 @@ export class ProductService {
     }
 
     return success('products not found', [])
+  }
+
+  async getProductsByCategory(category_name: string, query: Pagination) {
+    const isInvalid = checkInvalidPagination(query)
+
+    if (isInvalid || !category_name) return error.notccepted('query is invalid')
+
+    const products = await this.pdRepo.findAll(
+      { category_name, sku: Not(IsNull()) },
+      [],
+      undefined,
+      query
+    )
+
+    let data = []
+
+    for (const product of products) {
+      const productId = product.id
+
+      const { image } = await this.pdImgService.findOneImageProduct({
+        product_id: productId,
+      })
+
+      data.push({ ...product, image })
+    }
+
+    return success('getted products by cateogry', { data })
   }
 }
