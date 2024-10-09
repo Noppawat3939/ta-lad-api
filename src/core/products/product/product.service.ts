@@ -7,7 +7,7 @@ import { ProductRepository } from './repositoy'
 import { ProductImageService } from '../product-image'
 import { ProductCategoryRepository } from '../category'
 import { ArrayContains, IsNull, MoreThan, Not } from 'typeorm'
-import type { Pagination } from 'src/types'
+import type { Pagination, QueryProduct } from 'src/types'
 import { ProductEntity } from './entities'
 import { GroupProductsRepository } from '../group-products'
 import { ProductShippingRepository } from '../product-shipping'
@@ -131,16 +131,22 @@ export class ProductService {
     return success(null, { data })
   }
 
-  async getProductList(query: Pagination) {
+  async getProductList(query: Pagination & QueryProduct) {
     const isInvalid = checkInvalidPagination(query)
 
     if (isInvalid) return error.notccepted('query is invalid')
 
+    let filter: QueryProduct = {}
+
+    if (query.category_name) {
+      filter.category_name = query.category_name
+    }
+
     const products = await this.pdRepo.findAll(
-      { sku: Not(IsNull()) },
+      { sku: Not(IsNull()), ...filter },
       [],
       undefined,
-      { page: query.page, page_size: query.page_size }
+      query
     )
     let data = []
 
