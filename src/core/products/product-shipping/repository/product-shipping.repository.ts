@@ -15,8 +15,18 @@ export class ProductShippingRepository {
     return response
   }
 
-  async findOne(filter: Where<Entity>) {
-    const response = await this.repo.findOne({ where: filter })
+  async findOne(filter: Where<Entity>, selected?: (keyof Entity)[]) {
+    let select = {}
+
+    const hasSelected = selected?.length > 0
+    if (hasSelected) {
+      selected.forEach((field) => (select[field] = true))
+    }
+
+    const response = await this.repo.findOne({
+      where: filter,
+      ...(hasSelected && { select }),
+    })
     return response
   }
 }
