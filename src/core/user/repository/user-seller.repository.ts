@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserSellerEntity as Entity } from '../entities'
 import { FindOneOptions, Repository } from 'typeorm'
+import { createSelectedAttribute } from 'src/lib'
 
 @Injectable()
 export class UserSellerRepository {
@@ -14,16 +15,11 @@ export class UserSellerRepository {
     filter: FindOneOptions<Entity>['where'],
     selected?: (keyof Entity)[]
   ) {
-    let select = {}
-
-    const hasSelected = selected?.length > 0
-    if (hasSelected) {
-      selected.forEach((field) => (select[field] = true))
-    }
+    const select = createSelectedAttribute(selected)
 
     const response = await this.repo.findOne({
       where: filter,
-      ...(hasSelected && { select }),
+      select,
     })
     return response
   }

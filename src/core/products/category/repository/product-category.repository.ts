@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { ProductCategoryEntity as Entity } from '../entities'
 import { DeepPartial, Repository } from 'typeorm'
 import type { SortOrder, Where } from 'src/types'
+import { createSelectedAttribute } from 'src/lib'
 
 @Injectable()
 export class ProductCategoryRepository {
@@ -26,15 +27,11 @@ export class ProductCategoryRepository {
   }
 
   async findOne(filter?: Where<Entity>, selected?: (keyof Entity)[]) {
-    let select = {}
-    const hasSelected = selected?.length > 0
-    if (hasSelected) {
-      selected.forEach((field) => (select[field] = true))
-    }
+    const select = createSelectedAttribute(selected)
 
     const response = await this.repo.findOne({
       where: filter,
-      ...(hasSelected && { select }),
+      select,
     })
     return response
   }
