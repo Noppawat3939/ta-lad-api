@@ -231,10 +231,20 @@ export class ProductService {
     let groupProducts = []
 
     if (product?.id) {
-      const groupedProducts = await this.groupPdRepo.findOne({
-        seller_id,
-        product_ids: ArrayContains([product.id]),
-      })
+      const [groupedProducts, productShipping, productImage] =
+        await Promise.all([
+          this.groupPdRepo.findOne({
+            seller_id,
+            product_ids: ArrayContains([product.id]),
+          }),
+          this.pdShippingRepo.findOne({ product_id: product.id }, [
+            'id',
+            'delivery_time',
+            'provider',
+            'shipping_fee',
+          ]),
+          this.pdImgService.getImageByProductId(product.id),
+        ])
 
       if (groupedProducts?.product_ids?.length > 0) {
         for (const productId of groupedProducts.product_ids) {
@@ -248,9 +258,6 @@ export class ProductService {
         }
       }
 
-      const productImage = await this.pdImgService.getImageByProductId(
-        product.id
-      )
       const image = productImage.map((item) => item.image)
       const { store_name, profile_image, updated_at, created_at } = userSeller
 
@@ -271,6 +278,7 @@ export class ProductService {
           updated_at,
           created_at,
         },
+        product_shipping: productShipping,
       }
     } else {
       data = null

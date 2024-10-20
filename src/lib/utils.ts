@@ -3,6 +3,7 @@ import { regex } from '.'
 import { join } from 'path'
 import { readFileSync } from 'fs'
 import { Pagination } from 'src/types'
+import { FindOptionsSelect } from 'typeorm'
 
 type Encoding = 'base64' | 'base64url' | 'hex' | 'binary'
 
@@ -116,4 +117,16 @@ export const createPaginationDB = (query?: Pagination) => {
   const offset = (page - 1) * (pageSize + 1)
 
   return { take: pageSize, skip: offset }
+}
+
+export const createSelectedAttribute = <E>(selected?: (keyof E)[]) => {
+  let select: FindOptionsSelect<E> = {}
+
+  const hasSelected = selected?.length > 0
+
+  if (hasSelected) {
+    selected.forEach((field) => (select[field as keyof typeof selected] = true))
+  }
+
+  return select
 }

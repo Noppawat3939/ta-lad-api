@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 import { ProductEntity } from '../../product/entities'
-import { ProdcutShippingStatus } from '../enum'
 
 @Entity('product_shipping')
 export class ProductShippingEntity {
@@ -26,13 +25,6 @@ export class ProductShippingEntity {
 
   @Column({ nullable: false })
   delivery_time: number
-
-  @Column({
-    type: 'enum',
-    default: ProdcutShippingStatus.PENDING,
-    enum: ProdcutShippingStatus,
-  })
-  status: ProdcutShippingStatus
 
   @CreateDateColumn({
     type: 'timestamp',

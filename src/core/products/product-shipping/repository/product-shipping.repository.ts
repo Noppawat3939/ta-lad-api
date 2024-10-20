@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { ProductShippingEntity as Entity } from '../entities'
 import { DeepPartial, Repository } from 'typeorm'
 import type { Where } from 'src/types'
+import { createSelectedAttribute } from 'src/lib'
 
 @Injectable()
 export class ProductShippingRepository {
@@ -15,8 +16,13 @@ export class ProductShippingRepository {
     return response
   }
 
-  async findOne(filter: Where<Entity>) {
-    const response = await this.repo.findOne({ where: filter })
+  async findOne(filter: Where<Entity>, selected?: (keyof Entity)[]) {
+    const select = createSelectedAttribute(selected)
+
+    const response = await this.repo.findOne({
+      where: filter,
+      select,
+    })
     return response
   }
 }

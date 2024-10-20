@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { ProductEntity as Entity } from '../entities'
 import { DeepPartial, Repository } from 'typeorm'
 import type { Pagination, SortOrder, Where } from 'src/types'
-import { createPaginationDB } from 'src/lib'
+import { createPaginationDB, createSelectedAttribute } from 'src/lib'
 
 @Injectable()
 export class ProductRepository {
@@ -23,18 +23,13 @@ export class ProductRepository {
     order?: SortOrder<Entity>,
     pagination?: Pagination
   ) {
-    let select = {}
-    const hasSelected = selected?.length > 0
-
     const createdPagination = createPaginationDB(pagination)
 
-    if (hasSelected) {
-      selected.forEach((field) => (select[field] = true))
-    }
+    const select = createSelectedAttribute(selected)
 
     const response = await this.repo.find({
       where: filter,
-      ...(hasSelected && { select }),
+      select,
       order: order || { created_at: 'desc' },
       ...createdPagination,
     })
