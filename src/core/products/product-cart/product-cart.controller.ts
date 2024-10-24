@@ -35,10 +35,10 @@ export class ProductCartController {
   @Roles(['user'])
   @HttpCode(HttpStatus.OK)
   @Post()
-  insertCart(@Req() req: Request, @Body() dto: InsertProductCartDto) {
+  updateCart(@Req() req: Request, @Body() dto: InsertProductCartDto) {
     const user: IJwtDecodeToken = req.user
 
-    return this.service.insertCart(user.id, dto)
+    return this.service.updateCart(user.id, dto)
   }
 
   @Roles(['user'])

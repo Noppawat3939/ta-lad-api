@@ -59,7 +59,7 @@ export class ProductCartService {
     return success(data.length > 0 ? 'getted cart' : 'no cart', data || [])
   }
 
-  async insertCart(user_id: number, dto: InsertProductCartDto) {
+  async updateCart(user_id: number, dto: InsertProductCartDto) {
     const product = await this.pdRepo.findOne({
       id: dto.product_id,
       sku: Not(IsNull()),
