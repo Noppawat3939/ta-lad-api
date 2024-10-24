@@ -12,6 +12,7 @@ import {
   ProductShippingEntity,
   ProductShippingRepository,
 } from '../product-shipping'
+import { ProductCartEntity } from '../product-cart'
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import {
       ProductCategoryEntity,
       GroupProductsEntity,
       ProductShippingEntity,
+      ProductCartEntity,
     ]),
   ],
   providers: [

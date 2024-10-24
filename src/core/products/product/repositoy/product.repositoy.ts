@@ -12,7 +12,7 @@ export class ProductRepository {
     private readonly repo: Repository<Entity>
   ) {}
 
-  async createProduct(entity: DeepPartial<Entity>[]) {
+  async create(entity: DeepPartial<Entity>[]) {
     const response = await this.repo.save(entity)
     return response
   }
@@ -36,14 +36,14 @@ export class ProductRepository {
     return response
   }
 
-  async findOne(filter: Where<Entity>) {
-    const response = await this.repo.findOne({ where: filter })
+  async findOne(filter: Where<Entity>, selected?: (keyof Entity)[]) {
+    const select = createSelectedAttribute(selected)
+
+    const response = await this.repo.findOne({ where: filter, select })
     return response
   }
 
-  async updateProduct(
-    entity: DeepPartial<Omit<Entity, 'updated_at' | 'created_at'>>
-  ) {
+  async update(entity: DeepPartial<Omit<Entity, 'updated_at' | 'created_at'>>) {
     const { id, ...rest } = entity
 
     const response = await this.repo.update(id, rest)

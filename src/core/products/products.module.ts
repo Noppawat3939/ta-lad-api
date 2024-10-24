@@ -3,6 +3,7 @@ import { ProductCategoryModule } from './category'
 import { SellerProductModule } from './seller-product'
 import { ProductModule } from './product/product.module'
 import { GroupProductsModule } from './group-products'
+import { ProductCartModule } from './product-cart'
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { GroupProductsModule } from './group-products'
     SellerProductModule,
     ProductModule,
     GroupProductsModule,
+    ProductCartModule,
   ],
 })
 export class ProductsModule {}

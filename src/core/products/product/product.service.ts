@@ -56,7 +56,7 @@ export class ProductService {
       })
     }
 
-    const createdProduct = await this.pdRepo.createProduct(createProductList)
+    const createdProduct = await this.pdRepo.create(createProductList)
 
     let newProductIds: number[] = []
 
@@ -204,7 +204,7 @@ export class ProductService {
       }
 
       for (const updateData of updateDataList) {
-        await this.pdRepo.updateProduct(updateData)
+        await this.pdRepo.update(updateData)
       }
     }
 
