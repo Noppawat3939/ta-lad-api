@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, Min } from 'class-validator'
+import { IsNotEmpty, IsNumber } from 'class-validator'
 
 export class InsertProductCartDto {
   @IsNumber()
@@ -6,6 +6,5 @@ export class InsertProductCartDto {
 
   @IsNotEmpty({ message: 'price is required' })
   @IsNumber()
-  @Min(1, { message: 'amount should be minimum 1' })
   amount: number
 }
