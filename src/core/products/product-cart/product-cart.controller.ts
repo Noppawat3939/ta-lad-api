@@ -23,12 +23,13 @@ export class ProductCartController {
   constructor(private readonly service: ProductCartService) {}
 
   @SkipThrottle()
-  @Roles(['user'])
+  @Roles(['user', 'store'])
   @Get()
   getCarts(@Req() req: Request) {
     const user: IJwtDecodeToken = req.user
+    const isStore = user.role === 'store'
 
-    return this.service.getCarts(user?.id)
+    return this.service.getCarts(user?.id, isStore)
   }
 
   @Roles(['user'])

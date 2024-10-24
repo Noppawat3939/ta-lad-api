@@ -1,22 +1,62 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { ProductCartRepository } from './repository'
 import { error, success } from 'src/lib'
 import { InsertProductCartDto } from './dto'
 import { ProductRepository } from '../product/repositoy'
-import { IsNull, Not } from 'typeorm'
+import { In, IsNull, Not } from 'typeorm'
 import { ProductCartStatus } from './enum'
+import { SellerProductRepository } from '../seller-product/repository'
+import { ProductCartEntity } from './entities'
 
 @Injectable()
 export class ProductCartService {
   constructor(
     private readonly repo: ProductCartRepository,
-    private readonly pdRepo: ProductRepository
+    private readonly pdRepo: ProductRepository,
+
+    @Inject(forwardRef(() => SellerProductRepository))
+    private sellerPdRepo: SellerProductRepository
   ) {}
 
-  async getCarts(user_id: number) {
-    const data = await this.repo.findAll({ user_id })
+  async getCarts(user_id: number, isStore = false) {
+    let data: ProductCartEntity[] = []
 
-    return success('getted cart', data)
+    if (isStore) {
+      const [sellerProducts, sellerProductCount] =
+        await this.sellerPdRepo.findAllAndCount(user_id)
+
+      if (sellerProductCount > 0) {
+        const productIds = sellerProducts.map((item) => item.product_id)
+
+        const productCarts = await this.repo.findAll(
+          {
+            product_id: In(productIds),
+          },
+          undefined,
+          ['product', 'user']
+        )
+        let dataValues = []
+
+        for (const cart of productCarts) {
+          const { user, ...restData } = cart
+          dataValues.push({
+            ...restData,
+            user: {
+              id: user.id,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              profile_image: user.profile_image,
+            },
+          })
+        }
+
+        data = dataValues
+      }
+    } else {
+      data = await this.repo.findAll({ user_id })
+    }
+
+    return success(data.length > 0 ? 'getted cart' : 'no cart', data || [])
   }
 
   async insertCart(user_id: number, dto: InsertProductCartDto) {

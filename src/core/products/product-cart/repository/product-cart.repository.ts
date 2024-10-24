@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DeepPartial, Repository } from 'typeorm'
 import { ProductCartEntity as Entity } from '../entities'
-import type { Where } from 'src/types'
+import type { IncludeProductCart, Where } from 'src/types'
 import { createSelectedAttribute } from 'src/lib'
 
 @Injectable()
@@ -11,13 +11,17 @@ export class ProductCartRepository {
     @InjectRepository(Entity) private readonly repo: Repository<Entity>
   ) {}
 
-  async findAll(filter: Where<Entity>, selected?: (keyof Entity)[]) {
+  async findAll(
+    filter: Where<Entity>,
+    selected?: (keyof Entity)[],
+    include?: IncludeProductCart
+  ) {
     const select = createSelectedAttribute(selected)
 
     const response = await this.repo.find({
       where: filter,
       select,
-      relations: ['product'],
+      relations: include || ['product'],
       order: { created_at: 'desc' },
     })
     return response
