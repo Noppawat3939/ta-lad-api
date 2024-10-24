@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
@@ -43,13 +43,13 @@ export class ProductCartEntity {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date
 
-  @ManyToMany(() => ProductEntity, (product) => product.id, {
+  @ManyToOne(() => ProductEntity, (product) => product.id, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'product_id' })
   product: ProductEntity
 
-  @ManyToMany(() => UserEntity, (user) => user.id, {
+  @ManyToOne(() => UserEntity, (user) => user.id, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })

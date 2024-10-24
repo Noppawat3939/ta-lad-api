@@ -14,7 +14,12 @@ export class ProductCartRepository {
   async findAll(filter: Where<Entity>, selected?: (keyof Entity)[]) {
     const select = createSelectedAttribute(selected)
 
-    const response = await this.repo.find({ where: filter, select })
+    const response = await this.repo.find({
+      where: filter,
+      select,
+      relations: ['product'],
+      order: { created_at: 'desc' },
+    })
     return response
   }
 
@@ -34,6 +39,11 @@ export class ProductCartRepository {
     const { id, ...rest } = entity
 
     const response = await this.repo.update(id, rest)
+    return response
+  }
+
+  async delete(id: number) {
+    const response = await this.repo.delete({ id })
     return response
   }
 }

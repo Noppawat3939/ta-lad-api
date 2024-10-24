@@ -14,9 +14,9 @@ export class ProductCartService {
   ) {}
 
   async getCarts(user_id: number) {
-    const data = await this.repo.findOne({ user_id })
+    const data = await this.repo.findAll({ user_id })
 
-    return success('getted cart', { data })
+    return success('getted cart', data)
   }
 
   async insertCart(user_id: number, dto: InsertProductCartDto) {
@@ -61,6 +61,37 @@ export class ProductCartService {
       ])
 
       return success('updated cart')
+    }
+  }
+
+  async removeCart<T extends number>(user_id: T, id: T) {
+    const productCart = await this.repo.findOne({
+      id,
+      user_id,
+      status: ProductCartStatus.OPEN,
+    })
+
+    if (productCart?.id) {
+      const { product_id, amount } = productCart
+      const product = await this.pdRepo.findOne({ id: product_id }, [
+        'id',
+        'stock_amount',
+      ])
+
+      const productStockUpdated = product.stock_amount + amount
+
+      await Promise.all([
+        this.repo.delete(productCart.id),
+        this.pdRepo.update({
+          id: product_id,
+          stock_amount: productStockUpdated,
+        }),
+      ])
+      return success(`removed cart_id ${id}`)
+    } else {
+      return error.notfound('product not found', {
+        error_message: 'ไม่พบตระกร้าสินค้า',
+      })
     }
   }
 }

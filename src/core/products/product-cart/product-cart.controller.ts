@@ -1,10 +1,11 @@
-import { SkipThrottle } from '@nestjs/throttler'
 import { ProductController } from '../decorator'
 import {
   Body,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -15,11 +16,13 @@ import { ProductCartService } from './product-cart.service'
 import { Roles } from 'src/decorator'
 import { AuthGuard } from 'src/guards'
 import { InsertProductCartDto } from './dto'
+import { SkipThrottle } from '@nestjs/throttler'
 @UseGuards(AuthGuard)
 @ProductController('cart')
 export class ProductCartController {
   constructor(private readonly service: ProductCartService) {}
 
+  @SkipThrottle()
   @Roles(['user'])
   @Get()
   getCarts(@Req() req: Request) {
@@ -28,7 +31,6 @@ export class ProductCartController {
     return this.service.getCarts(user?.id)
   }
 
-  @SkipThrottle()
   @Roles(['user'])
   @HttpCode(HttpStatus.OK)
   @Post('insert')
@@ -36,5 +38,14 @@ export class ProductCartController {
     const user: IJwtDecodeToken = req.user
 
     return this.service.insertCart(user.id, dto)
+  }
+
+  @Roles(['user'])
+  @HttpCode(HttpStatus.OK)
+  @Delete(':id')
+  removeCart(@Req() req: Request, @Param() param: { id: string }) {
+    const user: IJwtDecodeToken = req.user
+
+    return this.service.removeCart(user.id, +param.id)
   }
 }
