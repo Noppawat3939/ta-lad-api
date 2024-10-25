@@ -12,4 +12,6 @@ export type IncludedSellerProduct = (
   | 'groupProduct'
 )[]
 
+export type IncludeProductCart = ('product' | 'user')[]
+
 export type QueryProduct = Partial<{ category_name: string }>

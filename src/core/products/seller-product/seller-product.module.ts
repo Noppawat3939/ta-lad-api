@@ -15,6 +15,6 @@ import { ProductImageModule } from '../product-image'
   ],
   controllers: [SellerProductController],
   providers: [SellerProductService, SellerProductRepository],
-  exports: [SellerProductService],
+  exports: [SellerProductService, SellerProductRepository],
 })
 export class SellerProductModule {}
