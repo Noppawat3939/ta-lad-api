@@ -7,11 +7,13 @@ import { ProductCartEntity } from './entities'
 import { ProductRepository } from '../product/repositoy'
 import { ProductEntity } from '../product/entities'
 import { SellerProductModule } from '../seller-product'
+import { ProductImageModule, ProductImageRepository } from '../product-image'
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ProductCartEntity, ProductEntity]),
     forwardRef(() => SellerProductModule),
+    forwardRef(() => ProductImageModule),
   ],
   controllers: [ProductCartController],
   providers: [ProductCartService, ProductCartRepository, ProductRepository],

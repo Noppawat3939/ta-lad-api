@@ -7,6 +7,7 @@ import { In, IsNull, Not } from 'typeorm'
 import { ProductCartStatus } from './enum'
 import { SellerProductRepository } from '../seller-product/repository'
 import { ProductCartEntity } from './entities'
+import { ProductImageService } from '../product-image'
 
 @Injectable()
 export class ProductCartService {
@@ -15,11 +16,14 @@ export class ProductCartService {
     private readonly pdRepo: ProductRepository,
 
     @Inject(forwardRef(() => SellerProductRepository))
-    private sellerPdRepo: SellerProductRepository
+    private sellerPdRepo: SellerProductRepository,
+
+    @Inject(forwardRef(() => ProductImageService))
+    private pdImgService: ProductImageService
   ) {}
 
   async getCarts(user_id: number, isStore = false) {
-    let data: ProductCartEntity[] = []
+    let data = []
 
     if (isStore) {
       const [sellerProducts, sellerProductCount] =
@@ -53,7 +57,24 @@ export class ProductCartService {
         data = dataValues
       }
     } else {
-      data = await this.repo.findAll({ user_id })
+      const response = await this.repo.findAll({ user_id })
+
+      for (const item of response) {
+        const productImages = await this.pdImgService.getImageByProductId(
+          item.product_id
+        )
+
+        const mappedImages = productImages.map((itemImg) => {
+          if (itemImg.is_main) return itemImg.image
+
+          return itemImg.image
+        })
+
+        data.push({
+          ...item,
+          product: { ...item.product, image: mappedImages },
+        })
+      }
     }
 
     return success(data.length > 0 ? 'getted cart' : 'no cart', data || [])
