@@ -6,7 +6,6 @@ import { ProductRepository } from '../product/repositoy'
 import { In, IsNull, Not } from 'typeorm'
 import { ProductCartStatus } from './enum'
 import { SellerProductRepository } from '../seller-product/repository'
-import { ProductCartEntity } from './entities'
 import { ProductImageService } from '../product-image'
 
 @Injectable()
