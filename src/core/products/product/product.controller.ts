@@ -22,10 +22,10 @@ import { HttpStatusCode } from 'axios'
 
 @ProductController('item')
 @UseFilters(ValidateBadReqExceptionFilter)
+@SkipThrottle()
 export class ProductItemController {
   constructor(private readonly service: ProductService) {}
 
-  @SkipThrottle()
   @UseGuards(AuthGuard)
   @Roles(['store'])
   @HttpCode(HttpStatusCode.Ok)
@@ -36,7 +36,6 @@ export class ProductItemController {
     return this.service.insertProduct(user.id, dto['data'])
   }
 
-  @SkipThrottle()
   @UseGuards(AuthGuard)
   @Roles(['store'])
   @HttpCode(HttpStatusCode.Ok)
@@ -47,7 +46,6 @@ export class ProductItemController {
     return this.service.getSellerProductList(seller.id)
   }
 
-  @SkipThrottle()
   @UseGuards(AuthGuard)
   @Roles(['store'])
   @HttpCode(HttpStatusCode.Ok)
@@ -58,14 +56,12 @@ export class ProductItemController {
     return this.service.getSellerProductById(seller.id, +id)
   }
 
-  @SkipThrottle()
   @UseGuards(PrivateKeyGuard)
   @Get('list')
   getProductList(@Query() query: Pagination & QueryProduct) {
     return this.service.getProductList(query)
   }
 
-  @SkipThrottle()
   @UseGuards(AuthGuard)
   @Roles(['store'])
   @HttpCode(HttpStatusCode.Ok)
@@ -76,14 +72,12 @@ export class ProductItemController {
     return this.service.updateSkuProduct(seller.id)
   }
 
-  @SkipThrottle()
   @UseGuards(PrivateKeyGuard)
   @Get('/:sku')
   getProductItem(@Param() { sku }: { sku: string }) {
     return this.service.getProductBySku(sku)
   }
 
-  @SkipThrottle()
   @UseGuards(PrivateKeyGuard)
   @Get('/relate/:sku')
   getRelateProductBySku(

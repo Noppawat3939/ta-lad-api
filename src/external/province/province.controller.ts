@@ -6,10 +6,10 @@ import { PrivateKeyGuard } from 'src/guards'
 
 @UseGuards(PrivateKeyGuard)
 @Controller('province')
+@SkipThrottle()
 export class ProvinceController {
   constructor(private readonly service: ProvinceService) {}
 
-  @SkipThrottle()
   @HttpCode(HttpStatusCode.Ok)
   @Post()
   getProvince(
