@@ -76,7 +76,7 @@ export class ProductCartService {
       }
     }
 
-    return success(data.length > 0 ? 'getted cart' : 'no cart', data || [])
+    return success(data.length > 0 ? 'getted carts' : 'no cart', data || [])
   }
 
   async updateCart(user_id: number, dto: InsertProductCartDto) {
